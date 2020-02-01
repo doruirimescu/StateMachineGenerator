@@ -1,0 +1,25 @@
+#include "state.h"
+void State::print()
+{
+    qInfo()<<" x: "<<pos.x()<<" y:"<<pos.y();
+}
+QPoint State::getPos()
+{//Getter for state position
+    return pos;
+}
+QPen State::getPen()
+{//Getter for state pen
+    return pen;
+}
+QColor State::getCol()
+{//Getter for state color
+    return col;
+}
+int State::getRad()
+{
+    return radius;
+}
+void State::setLabel(QString label)
+{
+    this->label = label;
+}
