@@ -17,5 +17,5 @@ SOURCES       = main.cpp \
                 state.cpp
 
 # install
-target.path = $$/home/aod/Desktop/github/UI
+target.path = $$/home/aod/Desktop/github/StateMachineGenerator/UI
 INSTALLS += target

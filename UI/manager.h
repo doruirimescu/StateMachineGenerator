@@ -5,7 +5,7 @@
 #include <state.h>
 #include <action.h>
 #include <QMap>
-
+#include <QtMath>
 class Manager
 {
 public:
@@ -14,7 +14,9 @@ public:
     void addComponent( Component * c );
     void addState( State * c );
     State * searchState( QPoint pos );
+    bool intersectState(QPoint pos);
     void print();
+
     QVector <Component *> components;
     QVector <State *> states;
 };

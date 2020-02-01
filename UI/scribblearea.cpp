@@ -64,7 +64,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         lastPoint = event->pos();
-        if( pState )
+        if( pState && !m->intersectState(lastPoint) )
         {// State placement is done
             m->addState(new State("State",previousX, previousY, QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), myStateColor, circleRad ));
             pState = false;
@@ -86,22 +86,9 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 {
     int x, y;
-    if( event->pos().x() > previousX )
-    {
-        x = (int) ceil(event->pos().x()/gridSize) * gridSize;
-    }
-    else
-    {
-        x = (int) floor(event->pos().x()/gridSize) * gridSize;
-    }
-    if( event->pos().y() > previousY )
-    {
-        y = (int) ceil(event->pos().y()/gridSize) * gridSize;
-    }
-    else
-    {
-        y = (int) floor(event->pos().y()/gridSize) * gridSize;
-    }
+    x = (int) round((float)event->pos().x()/(float)gridSize) * gridSize;
+    y = (int) round((float)event->pos().y()/(float)gridSize) * gridSize;
+
     if( pState )
     {
         //draw at new position
