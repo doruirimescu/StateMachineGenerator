@@ -9,8 +9,8 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QList>
 
-//! [0]
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), scribbleArea(new ScribbleArea(this))
 {
@@ -49,9 +49,15 @@ void MainWindow::save()
 
 void MainWindow::penColor()
 {
-    QColor newColor = QColorDialog::getColor(scribbleArea->penColor());
+    QColorDialog * c = new QColorDialog(this);
+    c->setStandardColor(0,0xE0E0E0);//To add some nice colors
+    c->setStandardColor(1,0xF5F5F5);
+
+    QColor newColor = c->getColor(scribbleArea->penColor(),this,"Title",QColorDialog::DontUseNativeDialog);
+
     if (newColor.isValid())
         scribbleArea->setPenColor(newColor);
+    delete c;
 }
 
 void MainWindow::stateColor()
@@ -60,16 +66,51 @@ void MainWindow::stateColor()
     if (newColor.isValid())
         scribbleArea->setStateColor(newColor);
 }
-void MainWindow::placeState()
+void MainWindow::changeGrid()
 {
+    int newSize = 3;
+    while( newSize % 10 != 0 )
+    {
+        newSize = QInputDialog::getInt( this,"Change grid",
+                                        "Enter a new grid size multiple of 10", scribbleArea->getGridSize() );
+    }
+    scribbleArea->setGridSize( newSize  );
+    scribbleArea->clearImage();
+}
+void MainWindow::changeRadius( )
+{
+    int newRad = 3;
+    while( newRad % 10 != 0 )
+    {
+        newRad = QInputDialog::getInt(this,"Edit state radius",
+                                      "Enter a new radius, multiple 10", scribbleArea->getStateRadius() );
+    }
+    scribbleArea->setStateRadius( newRad );
+}
+void MainWindow::placeState()
+{//Place state
+
     scribbleArea->pState = true;
-    qInfo()<<"Place state";
+    scribbleArea->eState = false;
+    scribbleArea->pAction = false;
+    scribbleArea->eAction = false;
+    changeRadius();
+
 }
 
 void MainWindow::placeAction()
-{
-    qInfo()<<"Place action";
-    scribbleArea->pAction = true;
+{//Toggle place action
+    if( scribbleArea->pAction )
+    {
+        scribbleArea->pAction = false;
+    }
+    else
+    {
+        scribbleArea->pAction = true;
+    }
+    scribbleArea->pState = false;
+    scribbleArea->eState = false;
+    scribbleArea->eAction = false;
 }
 void MainWindow::editState()
 {
@@ -108,7 +149,6 @@ void MainWindow::about()
                "how to use QPainter to draw an image in real time, as well as "
                "to repaint widgets.</p>"));
 }
-
 void MainWindow::createActions()
 {
     openAct = new QAction(tr("&Open..."), this);
@@ -126,8 +166,8 @@ void MainWindow::createActions()
         saveAsActs.append(action);
     }
 
-   printAct = new QAction(tr("&Print..."), this);
-   connect(printAct, &QAction::triggered, scribbleArea, &ScribbleArea::print);
+    printAct = new QAction(tr("&Print..."), this);
+    connect(printAct, &QAction::triggered, scribbleArea, &ScribbleArea::print);
 
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
@@ -150,6 +190,12 @@ void MainWindow::createActions()
     aboutQtAct = new QAction(tr("About &Qt"), this);
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
 
+    changeGridAct = new QAction(tr("Change &grid size"), this);
+    connect(changeGridAct, &QAction::triggered, this, &MainWindow::changeGrid);
+
+    changeRadiusAct = new QAction(tr("Change state &radius"), this);
+    connect(changeRadiusAct, &QAction::triggered, this, &MainWindow::changeRadius);
+
     /* Add state machine drawing */
     stateColorAct = new QAction(tr("&State Color..."), this);
     connect(stateColorAct, &QAction::triggered, this, &MainWindow::stateColor);
@@ -163,7 +209,7 @@ void MainWindow::createActions()
     editStateAct->setShortcut(tr("Ctrl+S"));
     connect(editStateAct, &QAction::triggered, this, &MainWindow::editState);
 
-    placeActionAct = new QAction(tr("Place Action"), this);
+    placeActionAct = new QAction(tr("Toggle place Action"), this);
     placeActionAct->setShortcut(tr("A"));
     connect(placeActionAct, &QAction::triggered, this, &MainWindow::placeAction);
 
@@ -188,6 +234,8 @@ void MainWindow::createMenus()
     optionMenu = new QMenu(tr("&Options"), this);
     optionMenu->addAction(penColorAct);
     optionMenu->addAction(penWidthAct);
+    optionMenu->addAction(changeGridAct);
+    optionMenu->addAction(changeRadiusAct);
     optionMenu->addAction(stateColorAct);
     optionMenu->addSeparator();
     optionMenu->addAction(clearScreenAct);

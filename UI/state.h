@@ -10,7 +10,7 @@
 class State : public Component
 {
 public:
-    State( QString label, int x, int y, QPen pen, QColor col, int radius ) : Component(label){ pos.setX(x); pos.setY(y); this->pen = pen; this->col = col; this->radius = radius;};
+    State( QString label, QPoint p, QPen pen, QColor col, int radius ) : Component(label){ this->pos=p; this->pen = pen; this->col = col; this->radius = radius;};
     ~State(){ qInfo()<<"dead"; }
 
     QPoint getPos();
@@ -21,6 +21,7 @@ public:
     void setCode(QString code);
     QString getCode();
     int getRad();
+    void setRad(int r);
 
 private:
     QString code; //code that runs when the state outputs

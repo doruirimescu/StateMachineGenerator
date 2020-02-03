@@ -33,18 +33,28 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 
     /*Create a manager*/
     m = new Manager();
-
-    label = new QLabel(this);
-    label->setText("this is the first\nqlabel");
-    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    label->setWordWrap(true);
 }
 ScribbleArea::~ScribbleArea()
 {
     qInfo()<<"Scribble";
     delete m;
 }
-
+int ScribbleArea::getStateRadius()
+{
+    return circleRad;
+}
+void ScribbleArea::setStateRadius( int rad )
+{
+    this->circleRad = rad;
+}
+void ScribbleArea::setGridSize(int grid)
+{
+    this->gridSize = grid;
+}
+int ScribbleArea::getGridSize()
+{
+    return this->gridSize;
+}
 void ScribbleArea::setPenColor(const QColor &newColor)
 {
     myPenColor = newColor;
@@ -60,10 +70,11 @@ void ScribbleArea::setPenWidth(int newWidth)
 
 void ScribbleArea::clearImage()
 {
-    m->states.clear();
     image.fill(qRgb(255, 255, 255));
-    modified = true;
-    update();
+}
+void ScribbleArea::clearStates()
+{
+    m->states.clear();
 }
 
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
@@ -74,7 +85,15 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         lastPoint = event->pos();
         if( pState && !m->intersectState(lastPoint) )
         {// State placement is done
-            m->addState(new State("State",previousX, previousY, QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), myStateColor, circleRad ));
+
+            QString newLabel="";
+            while( newLabel.compare("") ==0 )
+            {
+                newLabel = QInputDialog::getText(this, "State label", "Enter new state label");
+            }
+
+            m->addState(new State(newLabel, prevPoint,
+                                  QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), myStateColor, circleRad ));
             pState = false;
         }
         else if( eState )
@@ -86,6 +105,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                 QStringList editOptions;
                 editOptions << "Edit label";
                 editOptions << "Edit output code";
+                editOptions << "Delete state";
 
                 QInputDialog *dialog = new QInputDialog;
                 dialog->setComboBoxEditable(false);
@@ -104,10 +124,20 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                     QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output",s->getCode() );
                     s->setCode( code );
                 }
+                else if( option.compare(editOptions[2]) == 0 )
+                {//delete state
+                    m->deleteState(s);
+                    clearImage();
+                }
             }
             eState = false;
         }
+        else if( pAction )
+        {
+            pAction = false;
+        }
     }
+    drawGrid();
 }
 
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
@@ -116,24 +146,26 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     x = (int) round((float)event->pos().x()/(float)gridSize) * gridSize;
     y = (int) round((float)event->pos().y()/(float)gridSize) * gridSize;
 
+    clearImage();
+    drawGrid();
     if( pState )
     {
-        //draw at new position
-        drawCircleTo( QPoint(x,y) );
+        //draw at new position=
+        drawCircleTo( QPoint(x,y), circleRad );
+        //update old positions
+        prevPoint = QPoint(x,y);
+
     }
-    //update old positions
-    previousX = x;
-    previousY = y;
-    drawGrid();
+    else if( pAction && m->onStateBorder( event->pos() ).compare("f") )
+    {//if cursor is at any valid anchor point
+        drawAnchor( QPoint(x,y) );
+        prevPoint = QPoint(x,y);
+    }
+    else if( pAction )
+    {
+    }
 }
 
-void ScribbleArea::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && scribbling)
-    {
-        scribbling = false;
-    }
-}
 
 void ScribbleArea::paintEvent(QPaintEvent *event)
 {
@@ -184,7 +216,7 @@ void ScribbleArea::drawGrid()
 void ScribbleArea::drawLine(const QPoint &start, const QPoint &end)
 {
     QPainter painter(&image);
-    painter.setPen(QPen(QColor("black"), 1, Qt::SolidLine, Qt::RoundCap,
+    painter.setPen(QPen(QColor(0xE0E0E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(start, end);
     update();
@@ -195,8 +227,8 @@ void ScribbleArea::drawState(State *s)
 
     /* Get state original pen */
     painter.setPen( s->getPen() );
-    painter.setBrush( s->getCol() );
-    painter.drawEllipse( s->getPos(), circleRad, circleRad );
+    painter.setBrush(s->getCol());
+    painter.drawEllipse( s->getPos(), s->getRad(), s->getRad() );
 
     /* Get a bounding rectangle for the text */
     QString text;
@@ -208,23 +240,41 @@ void ScribbleArea::drawState(State *s)
     painter.end();
 }
 
-void ScribbleArea::drawCircleTo(const QPoint &endPoint)
+void ScribbleArea::drawCircleTo(const QPoint &endPoint, int radius)
 {
     QPainter painter(&image);
 
     //delete previous ellipse
     painter.setPen( QPen(QColor( 0xffffff ), myPenWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.drawEllipse( QPoint(previousX, previousY), circleRad, circleRad );
+    painter.setBrush(QColor(0xffffff));
+    painter.drawEllipse( prevPoint, radius, radius );
 
     //draw current ellipse
     painter.setPen( QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.drawEllipse( endPoint, circleRad, circleRad );
+    painter.setBrush(myStateColor);
+    painter.setOpacity(0.2);
+    painter.drawEllipse( endPoint, radius, radius );
 
     update();
     painter.end();
 }
+void ScribbleArea::drawAnchor(const QPoint &endPoint)
+{
+    QPainter painter(&image);
 
+    //delete previous ellipse
+    painter.setPen( QPen(QColor( 0xffffff ), myPenWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush(QColor(0xffffff));
+    painter.drawEllipse( prevPoint, 10, 10 );
 
+    //draw current ellipse
+    painter.setPen( QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush(QColor(0x33001A));
+    painter.drawEllipse( endPoint, 10, 10 );
+
+    update();
+    painter.end();
+}
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)

@@ -9,7 +9,6 @@ HEADERS       = mainwindow.h \
                 scribblearea.h \
                 state.h
 SOURCES       = main.cpp \
-                action.cpp \
                 component.cpp \
                 mainwindow.cpp \
                 manager.cpp \

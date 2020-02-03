@@ -12,9 +12,11 @@ public:
     Manager(){};
     ~Manager();
     void addComponent( Component * c );
-    void addState( State * c );
+    void addState( State * s );
+    void deleteState( State * s );
     State * searchState( QPoint pos );
     bool intersectState(QPoint pos);
+    QString onStateBorder(QPoint pos);
     void print();
 
     QVector <Component *> components;
