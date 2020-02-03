@@ -53,6 +53,7 @@
 
 #include <QColor>
 #include <QImage>
+#include <QLabel>
 #include <QPoint>
 #include <QWidget>
 #include "manager.h"
@@ -77,6 +78,8 @@ public:
     bool pAction;
     bool eState;
     bool eAction;
+
+    QLabel *label;
 
 public slots:
     void clearImage();

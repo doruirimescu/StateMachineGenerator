@@ -6,6 +6,8 @@
 #include <QtMath>
 #include <QStaticText>
 #include <QInputDialog>
+#include <QApplication>
+#include <QLabel>
 #include "manager.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
@@ -31,6 +33,11 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 
     /*Create a manager*/
     m = new Manager();
+
+    label = new QLabel(this);
+    label->setText("this is the first\nqlabel");
+    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    label->setWordWrap(true);
 }
 ScribbleArea::~ScribbleArea()
 {
@@ -61,6 +68,7 @@ void ScribbleArea::clearImage()
 
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
 {
+    QApplication::restoreOverrideCursor();
     if (event->button() == Qt::LeftButton)
     {
         lastPoint = event->pos();
@@ -75,8 +83,27 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             State * s = m->searchState(event->pos());
             if( s != nullptr )
             {
-                QString label = QInputDialog::getText(this, QString("Edit state label"), QString("New Label"),QLineEdit::Normal,QString(s->getLabel()),nullptr,0);
-                s->setLabel(label);
+                QStringList editOptions;
+                editOptions << "Edit label";
+                editOptions << "Edit output code";
+
+                QInputDialog *dialog = new QInputDialog;
+                dialog->setComboBoxEditable(false);
+
+                QString chooseEdit = "Edit " + s->getLabel();
+                QString option = dialog->getItem(this, chooseEdit, "What property do you want to edit?", editOptions, 0, false);
+
+                qInfo() << option;
+                if( option.compare(editOptions[0]) == 0)
+                {//edit label
+                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",QLineEdit::Normal, s->getLabel() );
+                    s->setLabel( label );
+                }
+                else if( option.compare(editOptions[1]) == 0 )
+                {//edit code
+                    QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output",s->getCode() );
+                    s->setCode( code );
+                }
             }
             eState = false;
         }
@@ -175,8 +202,8 @@ void ScribbleArea::drawState(State *s)
     QString text;
     text.append( QString(s->getLabel() ) );
     QRectF rect = painter.boundingRect( s->getPos().x(), s->getPos().y(),50, 50, Qt::AlignHCenter, text );
-    painter.drawStaticText( s->getPos().x() - rect.width()/2, s->getPos().y() - rect.height()/2, QStaticText( text ) ) ;
 
+    painter.drawStaticText( s->getPos().x() - rect.width()/2, s->getPos().y() - rect.height()/2, QStaticText( text ) ) ;
     update();
     painter.end();
 }

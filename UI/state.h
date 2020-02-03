@@ -18,9 +18,12 @@ public:
     QColor getCol();
     void print();
     void setLabel(QString label);
+    void setCode(QString code);
+    QString getCode();
     int getRad();
 
 private:
+    QString code; //code that runs when the state outputs
     QPen   pen; //for drawing borders
     QPoint pos; //for tracking position
     QColor col; //for drawing background

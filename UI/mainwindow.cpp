@@ -75,6 +75,7 @@ void MainWindow::editState()
 {
     scribbleArea->eState = true;
     qInfo()<<"Edit state";
+    QApplication::setOverrideCursor(Qt::PointingHandCursor);
 }
 void MainWindow::editAction()
 {

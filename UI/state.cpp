@@ -23,3 +23,11 @@ void State::setLabel(QString label)
 {
     this->label = label;
 }
+void State::setCode(QString code)
+{
+    this->code = code;
+}
+QString State::getCode()
+{
+    return this->code;
+}
