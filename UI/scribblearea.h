@@ -6,7 +6,8 @@
 #include <QPoint>
 #include <QWidget>
 #include "manager.h"
-
+#include <QObject>
+#include <PropertyHelper.h>
 class ScribbleArea : public QWidget
 {
     Q_OBJECT
@@ -26,10 +27,10 @@ public:
     int penWidth() const { return myPenWidth; }
 
     /* State variables for the menu */
-    bool pState;
-    bool pAction;
-    bool eState;
-    bool eAction;
+    bool pState;    //If user is placing state
+    bool pAction;   //If user is placing action
+    bool eState;    //If user is editing state
+    bool eAction;   //If user is editing action
 
 public slots:
     void clearImage();
@@ -43,6 +44,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
+    AUTO_PROPERTY(QString, myProperty);
     void drawLine( const QPoint &start, const QPoint &end );
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid();

@@ -16,7 +16,7 @@ public:
     void deleteState( State * s );
     State * searchState( QPoint pos );
     bool intersectState(QPoint pos);
-    QString onStateBorder(QPoint pos);
+    QPoint onStateBorder(QPoint pos);
     void print();
 
     QVector <Component *> components;

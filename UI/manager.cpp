@@ -1,4 +1,8 @@
 #include "manager.h"
+/**
+ * The manager manages components such as states
+ * Can add state, remove state, search for state, check if position is on state border
+ */
 
 Manager::~Manager()
 {
@@ -71,48 +75,48 @@ bool Manager::intersectState(QPoint pos)
     }
     return false;
 }
-QString Manager::onStateBorder(QPoint pos)
+QPoint Manager::onStateBorder(QPoint pos)
 {
-    int r,x,y;
+    int r, x, y;
     for( const auto & i : states )
-    {
+    {/* Go for each state and determine if cursor in border*/
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
 
-        int signX = qFabs( pos.x() - x ) / ( pos.x() - x);
-        int signY = qFabs( pos.y() - y ) / ( pos.y() - y);
-
+        /* Absolute distances */
         float fabsX = qFabs( pos.x() - x );
         float fabsY = qFabs( pos.y() - y );
 
         float dist = sqrt( fabsX*fabsX + fabsY*fabsY );
 
-        if( dist <= ( r + 1 ) && dist >= ( r - 1 )  )
+        int db = 10;
+
+        if( dist <= ( r + db ) && dist >= ( r - db )  )
         {// In or on border of state
-            if( fabsY <= 10 && fabsX > 15 )
+            double atan = qAtan2( y -pos.y(), pos.x() - x );
+            qInfo()<<atan;
+            if( atan >= -M_PI/4 && atan <= M_PI/4 )
             {
-                if( signX >= 0  )
-                {//Right border
-                    return "r";
-                }
-                else if ( fabsX > 10 )
-                {//Left border
-                    return "l";
-                }
+                qInfo()<< "R";
+                return QPoint(x+r, y);
             }
-            else if( fabsX <= 10 && fabsY > 15 )
+            else if( atan >= M_PI/4 && atan <= 3*M_PI/4 )
             {
-                if( signY <=0 )
-                {//Up border
-                    return "u";
-                }
-                else
-                {
-                    return "d";
-                }
+                qInfo()<< "U";
+                return QPoint(x, y-r);
+            }
+            else if( ( atan >= 3*M_PI/4 && atan <= M_PI ) || (atan >= -M_PI && atan <= -3*M_PI/4 ) )
+            {
+                qInfo()<< "L";
+                return QPoint(x-r, y);
+            }
+            else if( atan >= -3*M_PI/4 && atan < -M_PI/4 )
+            {
+                qInfo()<< "D";
+                return QPoint(x, y+r);
             }
         }
     }
-    return "f";
+    return QPoint(-1000,-1000);
 }

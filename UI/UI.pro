@@ -3,6 +3,7 @@ requires(qtConfig(filedialog))
 qtHaveModule(printsupport): QT += printsupport
 
 HEADERS       = mainwindow.h \
+                PropertyHelper.h \
                 action.h \
                 component.h \
                 manager.h \

@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
 
-    setWindowTitle(tr("Scribble"));
+    setWindowTitle(tr("State Machine Generator"));
     resize(500, 500);
 }
 
@@ -94,7 +94,7 @@ void MainWindow::placeState()
     scribbleArea->eState = false;
     scribbleArea->pAction = false;
     scribbleArea->eAction = false;
-    changeRadius();
+    //changeRadius();
 
 }
 
@@ -224,6 +224,7 @@ void MainWindow::createMenus()
     for (QAction *action : qAsConst(saveAsActs))
         saveAsMenu->addAction(action);
 
+    /* Create File menu */
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAct);
     fileMenu->addMenu(saveAsMenu);
@@ -231,6 +232,7 @@ void MainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
+    /* Create option menu */
     optionMenu = new QMenu(tr("&Options"), this);
     optionMenu->addAction(penColorAct);
     optionMenu->addAction(penWidthAct);
@@ -240,16 +242,19 @@ void MainWindow::createMenus()
     optionMenu->addSeparator();
     optionMenu->addAction(clearScreenAct);
 
+    /* Create help menu */
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 
+    /* Create state menu */
     stateMenu= new QMenu(tr("&State machine"),this);
     stateMenu->addAction(placeStateAct);
     stateMenu->addAction(editStateAct);
     stateMenu->addAction(placeActionAct);
     stateMenu->addAction(editActionAct);
 
+    /* Add menus to menu bar */
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(optionMenu);
     menuBar()->addMenu(helpMenu);
