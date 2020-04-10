@@ -6,7 +6,7 @@
 
 Manager::~Manager()
 {
-    for( const auto & i : components )
+    for( const auto & i : actions )
     {
         delete i;
     }
@@ -15,10 +15,8 @@ Manager::~Manager()
         delete i;
     }
 }
-void Manager::addComponent(Component *c)
-{
-    components.append(c);
-}
+
+/* State-related management */
 void Manager::addState(State *s)
 {
     states.append(s);
@@ -29,14 +27,22 @@ void Manager::deleteState(State *s)
     {
         if( states[ i ] == s )
         {
+            for( int j = 0; j < actions.size(); ++j )
+            {
+                if( actions[j]->getStart() == s || actions[j]->getEnd() == s )
+                {
+                    delete actions[j];
+                    actions.erase(actions.begin()+j);
+                }
+            }
             states.erase(states.begin()+i);
         }
     }
     delete s;
 }
-void Manager::print()
+void Manager::printStates()
 {
-    for (const auto & i : components)
+    for (const auto & i : states)
     {
         i->print();
     }
@@ -75,7 +81,7 @@ bool Manager::intersectState(QPoint pos)
     }
     return false;
 }
-QPoint Manager::onStateBorder(QPoint pos)
+QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
 {
     int r, x, y;
     for( const auto & i : states )
@@ -98,25 +104,54 @@ QPoint Manager::onStateBorder(QPoint pos)
             qInfo()<<atan;
             if( atan >= -M_PI/4 && atan <= M_PI/4 )
             {
-                qInfo()<< "R";
+                posInfo = QString("R");
                 return QPoint(x+r, y);
             }
             else if( atan >= M_PI/4 && atan <= 3*M_PI/4 )
             {
-                qInfo()<< "U";
+                posInfo = QString("U");
                 return QPoint(x, y-r);
             }
             else if( ( atan >= 3*M_PI/4 && atan <= M_PI ) || (atan >= -M_PI && atan <= -3*M_PI/4 ) )
             {
-                qInfo()<< "L";
+                posInfo = QString("L");
                 return QPoint(x-r, y);
             }
             else if( atan >= -3*M_PI/4 && atan < -M_PI/4 )
             {
-                qInfo()<< "D";
+                posInfo = QString("D");
                 return QPoint(x, y+r);
             }
         }
     }
     return QPoint(-1000,-1000);
+}
+
+/* Action-related management */
+
+void Manager::addAction(Action *a)
+{
+    actions.append(a);
+}
+Action* Manager::getLastAction()
+{
+    return actions.back();
+}
+void Manager::printActions()
+{
+    for (const auto & i : actions)
+    {
+        i->print();
+    }
+}
+void Manager::deleteAction(Action *a)
+{
+    for(int i = 0; i < actions.size(); ++i )
+    {
+        if( actions[ i ] == a )
+        {
+            actions.erase(actions.begin() + i);
+        }
+    }
+    delete a;
 }

@@ -27,6 +27,10 @@ void State::setLabel(QString label)
 {/* Set the state label */
     this->label = label;
 }
+QString State::getLabel()
+{
+    return this->label;
+}
 void State::setCode(QString code)
 {/* Set the code that the state is supposed to be running */
     this->code = code;
@@ -36,3 +40,4 @@ QString State::getCode()
 {/* Set the code that the state is supposed to be running  */
     return this->code;
 }
+

@@ -8,6 +8,9 @@
 #include "manager.h"
 #include <QObject>
 #include <PropertyHelper.h>
+
+constexpr QPoint invalidPoint = QPoint(-1000, -1000);
+
 class ScribbleArea : public QWidget
 {
     Q_OBJECT
@@ -27,10 +30,17 @@ public:
     int penWidth() const { return myPenWidth; }
 
     /* State variables for the menu */
-    bool pState;    //If user is placing state
-    bool pAction;   //If user is placing action
-    bool eState;    //If user is editing state
-    bool eAction;   //If user is editing action
+    bool pState;        //If user is placing state
+    bool pAction;       //If user is placing action
+    bool pActionStart;  //If user is placing the startpoint of the action true, if endpoint is placed, false
+    bool eState;        //If user is editing state
+    bool eAction;       //If user is editing action
+
+    /* Please, group these into a class. */
+    State* actionStart;
+    QPoint actionStartPoint;
+    State* actionEnd;
+    QPoint actionEndPoint;
 
 public slots:
     void clearImage();
@@ -45,18 +55,21 @@ protected:
 
 private:
     AUTO_PROPERTY(QString, myProperty);
-    void drawLine( const QPoint &start, const QPoint &end );
+
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid();
     void clearStates();
     void drawCircleTo(const QPoint &endPoint, int radius);
+    void drawLine( const QPoint &start, const QPoint &end );
     void drawAnchor(const QPoint &endPoint);
+    void drawActionLine( const QPoint &start, const QPoint &end );
     void drawState(State* s);
+    void drawAction(Action* a);
 
     bool modified = false;
     bool scribbling = false;
     int myPenWidth = 2;
-    QPoint prevPoint = QPoint(0,0);
+    QPoint prevPoint = QPoint(0,0); //Previous point where cursor was
     int gridSize  = 20;
     int circleRad = 60;
 

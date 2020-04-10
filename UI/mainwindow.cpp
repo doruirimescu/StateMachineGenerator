@@ -99,15 +99,8 @@ void MainWindow::placeState()
 }
 
 void MainWindow::placeAction()
-{//Toggle place action
-    if( scribbleArea->pAction )
-    {
-        scribbleArea->pAction = false;
-    }
-    else
-    {
-        scribbleArea->pAction = true;
-    }
+{/* Place action behavior */
+    scribbleArea->pAction = true;
     scribbleArea->pState = false;
     scribbleArea->eState = false;
     scribbleArea->eAction = false;
