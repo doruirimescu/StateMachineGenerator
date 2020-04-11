@@ -1,23 +1,22 @@
 #include "scribblearea.h"
 
-/* Mouse event methods */
+/* Mouse event methods : Controller */
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
 {/* When user clicks */
     QApplication::restoreOverrideCursor();
     if (event->button() == Qt::LeftButton)
     {
         lastPoint = event->pos();
+
         if( pState && !m->intersectState(lastPoint) )
         {/* State placement is done */
 
-            QString newLabel="";
-            while( newLabel.compare("") ==0 )
+            QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label");
+            if( newLabel.compare("") )
             {
-                newLabel = QInputDialog::getText(this, "State label", "Enter new state label");
+                m->addState(new State(newLabel, prevPoint,
+                                      QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), getStateColor(), getStateRadius() ));
             }
-
-            m->addState(new State(newLabel, prevPoint,
-                                  QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), myStateColor, circleRad ));
             pState = false;
         }
         else if( eState )
@@ -41,18 +40,17 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 
                 if( option.compare(editOptions[0]) == 0)
                 {/* edit label */
-                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",QLineEdit::Normal, s->getLabel() );
+                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label", QLineEdit::Normal, s->getLabel() );
                     s->setLabel( label );
                 }
                 else if( option.compare(editOptions[1]) == 0 )
                 {/* Edit code */
-                    QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output",s->getCode() );
+                    QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output", s->getCode() );
                     s->setCode( code );
                 }
                 else if( option.compare(editOptions[2]) == 0 )
                 {/* Delete state */
                     m->deleteState(s);
-                    clearImage();
                 }
             }
             eState = false;
@@ -83,15 +81,16 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 {
     int x, y;
-    x = roundToGrid( event->pos().x() );
-    y = roundToGrid( event->pos().y() );
+    x = Maths::roundToGrid( event->pos().x(), view->getGridSize() );
+    y = Maths::roundToGrid( event->pos().y(), view->getGridSize() );
     QPoint currentPoint = QPoint(x,y);
-    clearImage();
     drawGrid();
     if( pState )
     {/* If moving mouse while placing state*/
+        /* Delete from previous position */
+        view->deleteCircleFrom(prevPoint);
         /* Draw at potentially new position */
-        drawCircleTo( currentPoint, circleRad );
+        view->drawCircleTo(currentPoint);
 
         /* Update old position with new position */
         prevPoint = currentPoint;
@@ -103,7 +102,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
         if( possibleAnchorPoint != invalidPoint )
         {
             /* If cursor is at any valid anchor point */
-            drawAnchor( possibleAnchorPoint );
+            view->drawAnchor( possibleAnchorPoint );
 
             if( pActionStart == false )
             {/* The user is placing an action startpoint */
@@ -115,12 +114,13 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
             {/* The user is placing an action endpoint */
                 actionEnd = m->searchState(possibleAnchorPoint);
                 actionEndPoint = possibleAnchorPoint;
-                drawActionLine(actionStartPoint, possibleAnchorPoint);
+                view->drawActionLine(actionStartPoint, possibleAnchorPoint);
             }
         }
         else if( pActionStart == true )
         {/* The user has placed the first anchor point */
-            drawActionLine(actionStartPoint, currentPoint);
+            view->drawActionLine(actionStartPoint, currentPoint);
         }
     }
+    update();
 }

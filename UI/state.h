@@ -7,9 +7,11 @@
 #include <QPen>
 #include <QString>
 #include <QLabel>
+
 class State
 {
 public:
+    /* Constructor-destructor */
     State( QString label, QPoint pos, QPen pen, QColor color, int radius ) :  pen(pen), pos(pos), col(color), radius(radius), label(label){};
     ~State(){ qInfo()<<this->label<<"dead!"; }
 

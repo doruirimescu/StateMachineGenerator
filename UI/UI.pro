@@ -8,7 +8,8 @@ HEADERS       = mainwindow.h \
                 manager.h \
                 maths.h \
                 scribblearea.h \
-                state.h
+                state.h \
+                view.h
 SOURCES       = main.cpp \
                 action.cpp \
                 mainwindow.cpp \
@@ -16,7 +17,8 @@ SOURCES       = main.cpp \
                 maths.cpp \
                 mouseMethods.cpp \
                 scribblearea.cpp \
-                state.cpp
+                state.cpp \
+                view.cpp
 
 # install
 target.path = $$/home/aod/Desktop/github/StateMachineGenerator/UI

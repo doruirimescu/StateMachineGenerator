@@ -5,8 +5,10 @@
 class Action
 {
 public:
+    /* Constructor-destructor */
     Action( State* s, State*e, QPoint sP, QPoint eP ) : start(s), end(e), startPos(sP), endPos(eP){};
     ~Action(){qInfo()<<"Action from state: "<<this->start->getLabel()<<" to state: "<<this->end->getLabel()<<"DEAD";}
+
     void print();
     State* getStart();
     State* getEnd();

@@ -12,7 +12,7 @@
 #include <QList>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), scribbleArea(new ScribbleArea(this))
+    : QMainWindow(parent), scribbleArea(new ScribbleArea(this) )
 {
     setCentralWidget(scribbleArea);
 
@@ -53,7 +53,7 @@ void MainWindow::penColor()
     c->setStandardColor(0,0xE0E0E0);//To add some nice colors
     c->setStandardColor(1,0xF5F5F5);
 
-    QColor newColor = c->getColor(scribbleArea->penColor(),this,"Title",QColorDialog::DontUseNativeDialog);
+    QColor newColor = c->getColor(scribbleArea->getPenColor(),this,"Title",QColorDialog::DontUseNativeDialog);
 
     if (newColor.isValid())
         scribbleArea->setPenColor(newColor);
@@ -62,7 +62,7 @@ void MainWindow::penColor()
 
 void MainWindow::stateColor()
 {
-    QColor newColor = QColorDialog::getColor(scribbleArea->penColor());
+    QColor newColor = QColorDialog::getColor(scribbleArea->getPenColor());
     if (newColor.isValid())
         scribbleArea->setStateColor(newColor);
 }
@@ -95,7 +95,6 @@ void MainWindow::placeState()
     scribbleArea->pAction = false;
     scribbleArea->eAction = false;
     //changeRadius();
-
 }
 
 void MainWindow::placeAction()
@@ -121,7 +120,7 @@ void MainWindow::penWidth()
     bool ok;
     int newWidth = QInputDialog::getInt(this, tr("Scribble"),
                                         tr("Select pen width:"),
-                                        scribbleArea->penWidth(),
+                                        scribbleArea->getPenWidth(),
                                         1, 50, 1, &ok);
     if (ok)
         scribbleArea->setPenWidth(newWidth);

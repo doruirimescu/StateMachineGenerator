@@ -1,23 +1,7 @@
 #ifndef SCRIBBLEAREA_H
 #define SCRIBBLEAREA_H
 
-#include <QColor>
-#include <QImage>
-#include <QPoint>
-#include <QWidget>
-#include "manager.h"
-#include <QObject>
-#include <PropertyHelper.h>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QtDebug>
-#include <QtMath>
-#include <QStaticText>
-#include <QInputDialog>
-#include <QApplication>
-#include <QLabel>
-#include "manager.h"
-#include "maths.h"
+#include "view.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -28,25 +12,36 @@
 #endif
 #endif
 
-constexpr QPoint invalidPoint = QPoint(-1000, -1000);
 
 class ScribbleArea : public QWidget
 {
     Q_OBJECT
 public:
+    /* Constructor-destructor */
     ScribbleArea(QWidget *parent = nullptr);
-    ~ScribbleArea();
-    void setPenColor(const QColor &newColor);
-    void setStateColor(const QColor &newColor);
-    void setPenWidth(int newWidth);
-    int getGridSize();
-    void setGridSize(int grid);
-    int getStateRadius();
-    void setStateRadius(int rad);
+    ~ScribbleArea(){ delete m; delete view;};
 
     bool isModified() const { return modified; }
-    QColor penColor() const { return myPenColor; }
-    int penWidth() const { return myPenWidth; }
+
+    /* State radius setter-getter */
+    int getStateRadius() const { return view->getStateRadius(); };
+    void setStateRadius(int rad) const { this->view->setStateRadius(rad); };
+
+    /* Grid size setter-getter*/
+    void setGridSize(int grid) const {this->view->setGridSize(grid);};
+    int getGridSize() const {return this->view->getGridSize();};
+
+    /* Pen color setter-getter */
+    QColor getPenColor() const { return view->getPenColor(); }
+    void setPenColor(const QColor &newColor) const{ this->view->setPenColor(newColor); };
+
+    /* State color setter-getter*/
+    void setStateColor(const QColor &newColor) const { view->setStateColor(newColor); };
+    QColor getStateColor() const{ return view->getStateColor();}
+
+    /* Pen width setter-getter */
+    void setPenWidth(int newWidth) const {view->setPenWidth(newWidth);};
+    int getPenWidth() const { return view->getPenWidth(); }
 
     /* State variables for the menu */
     bool pState;        //If user is placing state
@@ -77,32 +72,17 @@ private:
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid();
     void clearStates();
-    void drawCircleTo(const QPoint &endPoint, int radius);
-    void drawLine( const QPoint &start, const QPoint &end );
-    void drawAnchor(const QPoint &endPoint);
-    void drawActionLine( const QPoint &start, const QPoint & end );
-    void drawState(State* s);
-    void drawAction(Action* a);
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
-    int roundToGrid(int);
 
     bool modified = false;
     bool scribbling = false;
-    int myPenWidth = 2;
     QPoint prevPoint = QPoint(0,0); //Previous point where cursor was
-    int gridSize  = 20;
-    int circleRad = 60;
 
     Manager *m;
-
-    QColor myPenColor = 0x3333FF;
-    QColor myStateColor = 0xF5F5F5;
     QImage image;
     QPoint lastPoint;
 
-    /* Used for drawing the arrow */
-    QBrush brush;
-    QPainterPath path;
+    View * view;
 };
 //! [0]
 
