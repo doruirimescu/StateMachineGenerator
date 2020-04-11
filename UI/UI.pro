@@ -6,12 +6,15 @@ HEADERS       = mainwindow.h \
                 PropertyHelper.h \
                 action.h \
                 manager.h \
+                maths.h \
                 scribblearea.h \
                 state.h
 SOURCES       = main.cpp \
                 action.cpp \
                 mainwindow.cpp \
                 manager.cpp \
+                maths.cpp \
+                mouseMethods.cpp \
                 scribblearea.cpp \
                 state.cpp
 

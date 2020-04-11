@@ -1,23 +1,6 @@
 #include "scribblearea.h"
 
-#include <QMouseEvent>
-#include <QPainter>
-#include <QtDebug>
-#include <QtMath>
-#include <QStaticText>
-#include <QInputDialog>
-#include <QApplication>
-#include <QLabel>
-#include "manager.h"
 
-#if defined(QT_PRINTSUPPORT_LIB)
-#include <QtPrintSupport/qtprintsupportglobal.h>
-#if QT_CONFIG(printdialog)
-#include <QPrinter>
-#include <QPrintDialog>
-
-#endif
-#endif
 
 /*
  * The area which reacts to user inputs
@@ -46,7 +29,6 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 }
 ScribbleArea::~ScribbleArea()
 {
-    qInfo()<<"Scribble";
     delete m;
 }
 int ScribbleArea::getStateRadius()
@@ -83,137 +65,14 @@ void ScribbleArea::clearImage()
     image.fill(qRgb(255, 255, 255));
 }
 void ScribbleArea::clearStates()
-{
+{/* Clear all states */
     m->states.clear();
 }
 
-/* Mouse event methods */
-
-void ScribbleArea::mousePressEvent(QMouseEvent *event)
-{/* When user clicks */
-    QApplication::restoreOverrideCursor();
-    if (event->button() == Qt::LeftButton)
-    {
-        lastPoint = event->pos();
-        if( pState && !m->intersectState(lastPoint) )
-        {/* State placement is done */
-
-            QString newLabel="";
-            while( newLabel.compare("") ==0 )
-            {
-                newLabel = QInputDialog::getText(this, "State label", "Enter new state label");
-            }
-
-            m->addState(new State(newLabel, prevPoint,
-                                  QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), myStateColor, circleRad ));
-            pState = false;
-        }
-        else if( eState )
-        {/* State editing is opened */
-
-            /* Try to find state at clicked position */
-            State * s = m->searchState(event->pos());
-
-            if( s != nullptr )
-            {/* If clicking inside a valid state */
-                QStringList editOptions;
-                editOptions << "Edit label";
-                editOptions << "Edit output code";
-                editOptions << "Delete state";
-
-                QInputDialog *dialog = new QInputDialog;
-                dialog->setComboBoxEditable(false);
-
-                QString chooseEdit = "Edit " + s->getLabel();
-                QString option = dialog->getItem(this, chooseEdit, "What property do you want to edit?", editOptions, 0, false);
-
-                qInfo() << option;
-                if( option.compare(editOptions[0]) == 0)
-                {/* edit label */
-                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",QLineEdit::Normal, s->getLabel() );
-                    s->setLabel( label );
-                }
-                else if( option.compare(editOptions[1]) == 0 )
-                {/* Edit code */
-                    QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output",s->getCode() );
-                    s->setCode( code );
-                }
-                else if( option.compare(editOptions[2]) == 0 )
-                {/* Delete state */
-                    m->deleteState(s);
-                    clearImage();
-                }
-            }
-            eState = false;
-        }
-        else if( pAction == true )
-        {/* If placing an action */
-            if( pActionStart == false )
-            {/* User wants to place the startpoint of the action */
-                pActionStart = true;
-                /* Create partial action*/
-                m->addAction( new Action( actionStart, actionEnd, actionStartPoint, invalidPoint ) );
-            }
-            else if( pActionStart == true )
-            {/* Action placement has finished, save action to state */
-                Action* lastAct = m->getLastAction();
-                lastAct->setEnd( actionEnd );
-                lastAct->setEndPoint( &actionEndPoint );
-                pActionStart = false;
-                pAction = false;
-                m->printActions();
-            }
-        }
-    }
-    drawGrid();
-}
-
-void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
+int ScribbleArea::roundToGrid(int x)
 {
-    int x, y;
-    x = (int) round((float)event->pos().x()/(float)gridSize) * gridSize;
-    y = (int) round((float)event->pos().y()/(float)gridSize) * gridSize;
-
-    QPoint currentPoint = QPoint(x,y);
-    clearImage();
-    drawGrid();
-    if( pState )
-    {/* If moving mouse while placing state*/
-        /* Draw at potentially new position */
-        drawCircleTo( currentPoint, circleRad );
-
-        /* Update old position with new position */
-        prevPoint = currentPoint;
-    }
-    else if( pAction )
-    {/* If placing first part of action */
-        QString posInfo;
-        QPoint possibleAnchorPoint = m->onStateBorder( event->pos(), posInfo );
-        if( possibleAnchorPoint != invalidPoint )
-        {
-            /* If cursor is at any valid anchor point */
-            drawAnchor( possibleAnchorPoint );
-
-            if( pActionStart == false )
-            {/* The user is placing an action startpoint */
-                /* Save current state to the startpoint of the action */
-                actionStart = m->searchState(possibleAnchorPoint);
-                actionStartPoint = possibleAnchorPoint;
-            }
-            else if( pActionStart == true )
-            {/* The user is placing an action endpoint */
-                actionEnd = m->searchState(possibleAnchorPoint);
-                actionEndPoint = possibleAnchorPoint;
-                drawActionLine(actionStartPoint, possibleAnchorPoint);
-            }
-        }
-        else if( pActionStart == true )
-        {/* The user has placed the first anchor point */
-            drawActionLine(actionStartPoint, currentPoint);
-        }
-    }
+    return (int) round( (float)x / (float)gridSize ) * gridSize;
 }
-
 
 void ScribbleArea::paintEvent(QPaintEvent *event)
 {
@@ -280,17 +139,40 @@ void ScribbleArea::drawActionLine(const QPoint &start, const QPoint &end)
 {
     /*
      * Draw an action line split into 2 parts.
+     * The endpoint contains an arrow.
      */
     QPainter painter(&image);
     painter.setPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
 
-    QPoint split1 = QPoint( start.x() + ( end.x() - start.x() ) / 2, start.y() );
+    /* First split happens horizontally */
+    QPoint split1 = QPoint( start.x() + roundToGrid(( end.x() - start.x() ) / 2 ), start.y() );
+
+    /* Second split happens vertically */
     QPoint split2 = split1;
     split2.setY(end.y());
+
+    /* Draw lines */
     painter.drawLine(start, split1 );
     painter.drawLine(split1, split2);
     painter.drawLine(split2, end);
+
+    /* Create an arrow pointing towards end, mind the arrow directions */
+
+    /* Define arrow dimensions -> should be a property of each action for later customization ? */
+    int arrowLength = gridSize;
+    int arrowWidth = gridSize;
+
+    int dirX = Maths::sign( end.x() - split2.x() );
+    if( dirX != 0 )
+    {/* Moving right dirX = 1, Moving left dirX = -1 */
+        drawArrow( end.x() - arrowLength * dirX  , split2.y(), end.x(), end.y(), arrowWidth, &painter);
+    }
+    else
+    {/* Moving up dirY = -1, Moving down dirY = 1 */
+        int dirY = Maths::sign( end.y() - start.y() );
+        drawArrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &painter);
+    }
     update();
 }
 void ScribbleArea::drawState(State *s)
@@ -350,12 +232,42 @@ void ScribbleArea::drawAnchor(const QPoint &endPoint)
     /* Draw ellipse */
     painter.setPen( QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
     painter.setBrush(QColor(0x33001A));
-    painter.drawEllipse( endPoint, 10, 10 );
+    painter.drawEllipse( endPoint, 5, 5 );
 
     update();
     painter.end();
 }
 
+void ScribbleArea::drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter)
+{
+    int dx, dy;
+    double sina, cosa, l;
+    l = qSqrt( (x - x0) * (x - x0)  + (y - y0) * (y - y0) );
+    sina = (y-y0)/l;
+    cosa = (x-x0)/l;
+    dx = ( (sina * w) / 2 );
+    dy = ( (cosa * w) / 2 );
+
+
+    QPoint start= QPoint(x0, y0);
+    QPoint end  = QPoint(x, y);
+    QPoint right= QPoint(dx + x0, (dy + y0) );
+    QPoint left = QPoint(x0 - dx, (y0 - dy) );
+
+    QPolygon poly;
+    poly<< start;
+    poly<<right;
+    poly<< end;
+    poly<<left;
+
+    path.clear();
+    brush.setColor(Qt::black);
+    brush.setStyle(Qt::SolidPattern);
+    path.addPolygon(poly);
+    painter->drawPolygon(poly);
+    painter->fillPath(path, brush);
+
+}
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)

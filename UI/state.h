@@ -10,7 +10,7 @@
 class State
 {
 public:
-    State( QString label, QPoint p, QPen pen, QColor col, int radius ) { this->label = label; this->pos=p; this->pen = pen; this->col = col; this->radius = radius;};
+    State( QString label, QPoint pos, QPen pen, QColor color, int radius ) :  pen(pen), pos(pos), col(color), radius(radius), label(label){};
     ~State(){ qInfo()<<this->label<<"dead!"; }
 
     QPoint getPos();

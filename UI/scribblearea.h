@@ -8,6 +8,25 @@
 #include "manager.h"
 #include <QObject>
 #include <PropertyHelper.h>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QtDebug>
+#include <QtMath>
+#include <QStaticText>
+#include <QInputDialog>
+#include <QApplication>
+#include <QLabel>
+#include "manager.h"
+#include "maths.h"
+
+#if defined(QT_PRINTSUPPORT_LIB)
+#include <QtPrintSupport/qtprintsupportglobal.h>
+#if QT_CONFIG(printdialog)
+#include <QPrinter>
+#include <QPrintDialog>
+
+#endif
+#endif
 
 constexpr QPoint invalidPoint = QPoint(-1000, -1000);
 
@@ -49,7 +68,6 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    //void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
@@ -62,9 +80,11 @@ private:
     void drawCircleTo(const QPoint &endPoint, int radius);
     void drawLine( const QPoint &start, const QPoint &end );
     void drawAnchor(const QPoint &endPoint);
-    void drawActionLine( const QPoint &start, const QPoint &end );
+    void drawActionLine( const QPoint &start, const QPoint & end );
     void drawState(State* s);
     void drawAction(Action* a);
+    void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
+    int roundToGrid(int);
 
     bool modified = false;
     bool scribbling = false;
@@ -79,6 +99,10 @@ private:
     QColor myStateColor = 0xF5F5F5;
     QImage image;
     QPoint lastPoint;
+
+    /* Used for drawing the arrow */
+    QBrush brush;
+    QPainterPath path;
 };
 //! [0]
 

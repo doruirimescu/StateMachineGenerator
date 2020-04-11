@@ -99,25 +99,25 @@ QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
         int db = 10;
 
         if( dist <= ( r + db ) && dist >= ( r - db )  )
-        {// In or on border of state
+        {/* If inside or on border of state */
+            /* Get cursor angle to find out in which quadrant it is*/
             double atan = qAtan2( y -pos.y(), pos.x() - x );
-            qInfo()<<atan;
-            if( atan >= -M_PI/4 && atan <= M_PI/4 )
+            if( atan >= MINUS_PI_OVER_4 && atan <= PI_OVER_4 )
             {
                 posInfo = QString("R");
                 return QPoint(x+r, y);
             }
-            else if( atan >= M_PI/4 && atan <= 3*M_PI/4 )
+            else if( atan >= PI_OVER_4 && atan <= THREE_PI_OVER_4 )
             {
                 posInfo = QString("U");
                 return QPoint(x, y-r);
             }
-            else if( ( atan >= 3*M_PI/4 && atan <= M_PI ) || (atan >= -M_PI && atan <= -3*M_PI/4 ) )
+            else if( ( atan >= THREE_PI_OVER_4 && atan <= M_PI ) || (atan >= -M_PI && atan <= MINUS_THREE_PI_OVER_4 ) )
             {
                 posInfo = QString("L");
                 return QPoint(x-r, y);
             }
-            else if( atan >= -3*M_PI/4 && atan < -M_PI/4 )
+            else if( atan >= MINUS_THREE_PI_OVER_4 && atan < MINUS_PI_OVER_4 )
             {
                 posInfo = QString("D");
                 return QPoint(x, y+r);
@@ -139,14 +139,14 @@ Action* Manager::getLastAction()
 }
 void Manager::printActions()
 {
-    for (const auto & i : actions)
+    for ( const auto & i : actions )
     {
         i->print();
     }
 }
 void Manager::deleteAction(Action *a)
 {
-    for(int i = 0; i < actions.size(); ++i )
+    for( int i = 0; i < actions.size(); ++i )
     {
         if( actions[ i ] == a )
         {

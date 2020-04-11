@@ -5,6 +5,7 @@
 #include <action.h>
 #include <QMap>
 #include <QtMath>
+#include "maths.h"
 class Manager
 {
 public:
