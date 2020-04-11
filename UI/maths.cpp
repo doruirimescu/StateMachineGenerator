@@ -20,3 +20,8 @@ int Maths::sign(int expr)
         return 0;
     }
 }
+
+int Maths::roundToGrid(int var, int grid)
+{
+    return (int) round( (float)var / (float)grid ) * grid;
+}
