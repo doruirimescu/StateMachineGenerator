@@ -2,10 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QList>
-#include <QtDebug>
 #include <QMainWindow>
 
-#include <QApplication>
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QImageWriter>

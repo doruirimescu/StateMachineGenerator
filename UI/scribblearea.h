@@ -1,6 +1,11 @@
 #ifndef SCRIBBLEAREA_H
 #define SCRIBBLEAREA_H
 
+#include <QInputDialog>
+#include <QApplication>
+#include <QWidget>
+#include <QMouseEvent>
+#include <QLabel>
 #include "view.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)

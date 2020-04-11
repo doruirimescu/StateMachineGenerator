@@ -3,22 +3,13 @@
 
 #include <QColor>
 #include <QImage>
-#include <QPoint>
-#include <QWidget>
-#include "manager.h"
-#include <QObject>
 #include <PropertyHelper.h>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QtDebug>
-#include <QtMath>
 #include <QStaticText>
-#include <QInputDialog>
-#include <QApplication>
-#include <QLabel>
+#include <QObject>
 #include "manager.h"
 #include "maths.h"
-#include <QObject>
 
 class View : public QObject
 {
