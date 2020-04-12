@@ -68,12 +68,12 @@ bool Manager::intersectState(QPoint pos)
 {
     int r,x,y;
     for( const auto & i : states )
-    {
+    {/* Check all the states */
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( qFabs( pos.x() - x ) < 2*r*1.1 && qFabs( pos.y() - y ) < 2*r*1.1 )
+        if( qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
         {
             qInfo()<< "Intersect state ";
             return true;
