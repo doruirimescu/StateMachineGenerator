@@ -8,7 +8,8 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
     QApplication::restoreOverrideCursor();
     if (event->button() == Qt::LeftButton)
     {
-        lastPoint = event->pos();
+        lastPoint.setX(Maths::roundToGrid( event->pos().x(), view->getGridSize() ));
+        lastPoint.setY(Maths::roundToGrid( event->pos().y(), view->getGridSize() ));
 
         if( pState && !m->intersectState(lastPoint) )
         {/* State placement is done, and we are not intersecting another state */
@@ -78,7 +79,6 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                 lastAct->setEndPoint(&actionEndPoint);
                 pActionStart = false;
                 pAction = false;
-                m->printActions();
             }
         }
     }
@@ -96,9 +96,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     drawGrid();
     if( pState )
     {/* If moving mouse while placing state */
-
-        /* Delete from previous position */
-        view->deleteCircleFrom(prevPoint);
 
         /* Draw at potentially new position */
         view->drawCircleTo(currentPoint);
@@ -136,5 +133,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
             view->drawActionLine(actionStartPoint, currentPoint);
         }
     }
+
     update();
 }
