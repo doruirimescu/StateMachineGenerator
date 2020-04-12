@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
 
-    setWindowTitle(tr("State Machine Generator"));
+    setWindowTitle( tr("State Machine Generator") );
     resize(500, 500);
 }
 
@@ -49,7 +49,7 @@ void MainWindow::save()
 
 void MainWindow::penColor()
 {
-    QColorDialog * c = new QColorDialog(this);
+    QColorDialog *c = new QColorDialog(this);
     c->setStandardColor(0,0xE0E0E0);//To add some nice colors
     c->setStandardColor(1,0xF5F5F5);
 
@@ -88,7 +88,7 @@ void MainWindow::changeRadius( )
     scribbleArea->setStateRadius( newRad );
 }
 void MainWindow::placeState()
-{//Place state
+{/* User is placing a state */
 
     scribbleArea->pState = true;
     scribbleArea->eState = false;
@@ -98,32 +98,35 @@ void MainWindow::placeState()
 }
 
 void MainWindow::placeAction()
-{/* Place action behavior */
+{/* User is placing an action */
+
     scribbleArea->pAction = true;
     scribbleArea->pState = false;
     scribbleArea->eState = false;
     scribbleArea->eAction = false;
 }
 void MainWindow::editState()
-{
+{/* User is editing a state */
+
     scribbleArea->eState = true;
     qInfo()<<"Edit state";
     QApplication::setOverrideCursor(Qt::PointingHandCursor);
 }
 void MainWindow::editAction()
-{
+{/* User is editing an action */
+
     scribbleArea->eAction = true;
     qInfo()<<"Edit Action";
 }
 void MainWindow::penWidth()
 {
     bool ok;
-    int newWidth = QInputDialog::getInt(this, tr("Scribble"),
-                                        tr("Select pen width:"),
-                                        scribbleArea->getPenWidth(),
-                                        1, 50, 1, &ok);
+    int newWidth = QInputDialog::getInt(this, tr("Scribble"), tr("Select pen width:"),
+                                        scribbleArea->getPenWidth(), 1, 50, 1, &ok);
     if (ok)
+    {
         scribbleArea->setPenWidth(newWidth);
+    }
 }
 
 void MainWindow::about()
@@ -173,8 +176,7 @@ void MainWindow::createActions()
 
     clearScreenAct = new QAction(tr("&Clear Screen"), this);
     clearScreenAct->setShortcut(tr("Ctrl+L"));
-    connect(clearScreenAct, &QAction::triggered,
-            scribbleArea, &ScribbleArea::clearImage);
+    connect(clearScreenAct, &QAction::triggered, scribbleArea, &ScribbleArea::clearImage);
 
     aboutAct = new QAction(tr("&About"), this);
     connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
@@ -192,7 +194,7 @@ void MainWindow::createActions()
     stateColorAct = new QAction(tr("&State Color..."), this);
     connect(stateColorAct, &QAction::triggered, this, &MainWindow::stateColor);
 
-    /*Add state machine actions*/
+    /* Add state machine actions */
     placeStateAct = new QAction(tr("Place state"), this);
     placeStateAct->setShortcut(tr("S"));
     connect(placeStateAct, &QAction::triggered, this, &MainWindow::placeState);
