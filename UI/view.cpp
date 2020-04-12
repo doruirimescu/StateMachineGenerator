@@ -1,11 +1,11 @@
 #include "view.h"
 
-void View::drawState(State *s)
+void View::drawState(const State* s)
 {
     QPainter painter(&image);
     /* Get state original pen */
     painter.setPen( s->getPen() );
-    painter.setBrush(s->getCol());
+    painter.setBrush( s->getCol() );
     painter.drawEllipse( s->getPos(), s->getRad(), s->getRad() );
 
     /* Get a bounding rectangle for the text */
@@ -25,7 +25,7 @@ void View::drawLine(const QPoint &start, const QPoint &end)
     painter.drawLine(start, end);
 }
 
-void View::drawAction(Action *a)
+void View::drawAction(const Action *a)
 {/* Draw a full action that has been completed */
     drawAnchor(a->getEndPoint());
     drawAnchor(a->getStartPoint());
