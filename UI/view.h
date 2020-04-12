@@ -15,20 +15,22 @@ class View : public QObject
 {
     Q_OBJECT
 
+/* Test slot */
 public slots:
-    void showOff(const QString& col){qInfo()<<"SHOWOFF!"<<col;};
+    void showOff(const QString &col){qInfo()<<"SHOWOFF!"<<col;};
+
 public:
     View(QImage &img): image(img) {};
 
     /* State-related drawing */
-    void drawState(const State* s);
+    void drawState(const State *s);
     void drawCircleTo(const QPoint &endPoint);
     void deleteCircleFrom(const QPoint &endPoint);
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
     void drawActionLine(const QPoint &start, const QPoint &end);
-    void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
+    void drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter);
     void drawAction(const Action *a);
 
     /* Line used for grids */
