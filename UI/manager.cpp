@@ -30,14 +30,17 @@ void Manager::deleteState(State *s)
             for( int j = 0; j < actions.size(); ++j )
             {
                 if( actions[j]->getStart() == s || actions[j]->getEnd() == s )
-                {
+                {/* If action deals with state for deleting, replace action with nullptr*/
                     delete actions[j];
-                    actions.erase(actions.begin()+j);
+                    actions[j] = nullptr;
                 }
             }
-            states.erase(states.begin()+i);
+            states.erase(states.begin() + i);
+            break;
         }
     }
+    /* Erase nullptr action from actions */
+    actions.erase(std::remove(actions.begin(), actions.end(), nullptr), actions.end());
     delete s;
 }
 void Manager::printStates()

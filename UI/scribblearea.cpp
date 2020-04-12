@@ -13,10 +13,11 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     pAction = false;
     eState  = false;
     eAction = false;
+    tst     = false;
 
     actionStartPoint = invalidPoint;
     actionEndPoint   = invalidPoint;
-    pActionStart = false;
+    pActionStart= false;
 
     /* Create a manager */
     m = new Manager();
@@ -79,8 +80,8 @@ void ScribbleArea::drawGrid()
     /* Draw all the actions */
     for( const auto & a: m->actions )
     {
-        if( a->getEndPoint() == invalidPoint )
-        {
+        if( a->getEndPoint() == invalidPoint && !tst )
+        {/* Action not finished, only draw anchor */
             view->drawAnchor( a->getStartPoint() );
         }
         else

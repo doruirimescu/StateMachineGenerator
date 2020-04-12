@@ -54,6 +54,7 @@ public:
     bool pActionStart;  //If user is placing the startpoint of the action true, if endpoint is placed, false
     bool eState;        //If user is editing state
     bool eAction;       //If user is editing action
+    bool tst;
 
     /* Please, group these into a class. */
     State* actionStart;
@@ -81,11 +82,10 @@ private:
 
     bool modified = false;
     bool scribbling = false;
-    QPoint prevPoint = QPoint(0,0); //Previous point where cursor was
 
     Manager *m;
     QImage image;
-    QPoint lastPoint;
+    QPoint currentPoint = QPoint(0, 0);
 
     View * view;
 };

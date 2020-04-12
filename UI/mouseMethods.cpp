@@ -8,17 +8,18 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
     QApplication::restoreOverrideCursor();
     if (event->button() == Qt::LeftButton)
     {
-        lastPoint.setX(Maths::roundToGrid( event->pos().x(), view->getGridSize() ));
-        lastPoint.setY(Maths::roundToGrid( event->pos().y(), view->getGridSize() ));
+        currentPoint.setX(Maths::roundToGrid( event->pos().x(), view->getGridSize() ));
+        currentPoint.setY(Maths::roundToGrid( event->pos().y(), view->getGridSize() ));
 
-        if( pState && !m->intersectState(lastPoint) )
+        if( pState && !m->intersectState(currentPoint) )
         {/* State placement is done, and we are not intersecting another state */
 
             QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label");
             if( newLabel.compare("") )
             {
-                m->addState(new State(newLabel, prevPoint,
-                                      QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin), getStateColor(), getStateRadius() ));
+                m->addState(new State(newLabel, currentPoint,
+                                      QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin),
+                                      getStateColor(), getStateRadius() ));
             }
             pState = false;
         }
@@ -45,7 +46,8 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                 if( option.compare(editOptions[0]) == 0)
                 {/* Edit label */
 
-                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label", QLineEdit::Normal, s->getLabel() );
+                    QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",
+                                                     QLineEdit::Normal, s->getLabel() );
                     s->setLabel( label );
                 }
                 else if( option.compare(editOptions[1]) == 0 )
@@ -62,6 +64,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             }
             eState = false;
         }
+
         else if( pAction == true )
         {/* If placing an action */
 
@@ -69,16 +72,46 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             {/* User wants to place the startpoint of the action */
                 pActionStart = true;
                 /* Create partial action*/
-                m->addAction( new Action( actionStart, actionEnd, actionStartPoint, invalidPoint ) );
+                //QString actLabel= QInputDialog::getText(this, "Action label", "Enter new action label");
+
+                m->addAction( new Action( "actLabel", actionStart, actionEnd, actionStartPoint, invalidPoint ) );
+                m->getLastAction()->addSplit( actionStartPoint );
             }
             else if( pActionStart == true )
-            {/* Action placement has finished, save action to state */
+            {/* Action startpoint placement has finished */
+                tst = true;
 
+                if( actionEndPoint != invalidPoint )
+                {
+                    currentPoint = actionEndPoint;
+                }
+
+                QPoint split1, split2;
+                /* First split happens horizontally */
+                split1 = QPoint( actionStartPoint.x() + Maths::roundToGrid( ( currentPoint.x() - actionStartPoint.x() ) / 2, view->getGridSize() ),
+                                        actionStartPoint.y() );
+
+                /* Second split happens vertically */
+                split2 = split1;
+                split2.setY( currentPoint.y() );
+
+                /* Get current action, add the current splits */
                 Action *lastAct = m->getLastAction();
-                lastAct->setEnd(actionEnd);
-                lastAct->setEndPoint(&actionEndPoint);
-                pActionStart = false;
-                pAction = false;
+                lastAct->addSplit(split1);
+                lastAct->addSplit(split2);
+                actionStartPoint = currentPoint;
+
+                if( actionEndPoint != invalidPoint )
+                {/* The user wants to finalize placing the action */
+                    Action *lastAct = m->getLastAction();
+                    lastAct->setEnd(actionEnd);
+                    lastAct->setEndPoint(&actionEndPoint);
+                    pActionStart = false;
+                    pAction = false;
+                    tst = false;
+                }
+
+                lastAct->addSplit(currentPoint);
             }
         }
     }
@@ -93,6 +126,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     x = Maths::roundToGrid( event->pos().x(), view->getGridSize() );
     y = Maths::roundToGrid( event->pos().y(), view->getGridSize() );
     QPoint currentPoint = QPoint(x,y);
+
     drawGrid();
     if( pState )
     {/* If moving mouse while placing state */
@@ -101,13 +135,12 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
         view->drawCircleTo(currentPoint);
 
         /* Update old position with new position */
-        prevPoint = currentPoint;
     }
     else if( pAction )
-    {/* If placing first part of action */
+    {/* If placing action */
 
         QString posInfo;
-        QPoint possibleAnchorPoint = m->onStateBorder( event->pos(), posInfo );
+        QPoint possibleAnchorPoint = m->onStateBorder( currentPoint, posInfo );
         if( possibleAnchorPoint != invalidPoint )
         {/* If cursor is at any valid anchor point */
 
@@ -124,15 +157,17 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 
                 actionEnd = m->searchState(possibleAnchorPoint);
                 actionEndPoint = possibleAnchorPoint;
-                view->drawActionLine(actionStartPoint, possibleAnchorPoint);
             }
         }
-        else if( pActionStart == true )
+        else
+        {
+            /* Reset action endpoint in case the user changes his mind */
+            actionEndPoint = invalidPoint;
+        }
+        if( pActionStart == true )
         {/* The user has placed the first anchor point */
-
-            view->drawActionLine(actionStartPoint, currentPoint);
+            view->drawPossibleActionLine(actionStartPoint, currentPoint);
         }
     }
-
     update();
 }

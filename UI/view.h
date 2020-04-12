@@ -25,13 +25,13 @@ public:
     /* State-related drawing */
     void drawState(const State *s);
     void drawCircleTo(const QPoint &endPoint);
-    void deleteCircleFrom(const QPoint &endPoint);
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
-    void drawActionLine(const QPoint &start, const QPoint &end);
+    void drawPossibleActionLine(const QPoint &start, const QPoint &end);
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter);
-    void drawAction(const Action *a);
+    void drawAction( Action *a);
+    void drawActionLineDev( Action *a);//in development
 
     /* Line used for grids */
     void drawLine(const QPoint &start, const QPoint &end);

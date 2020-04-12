@@ -6,7 +6,7 @@ class Action
 {
 public:
     /* Constructor-destructor */
-    Action( State* s, State* e, QPoint sP, QPoint eP ) : start(s), end(e), startPos(sP), endPos(eP){};
+    Action( QString label, State* s, State* e, QPoint sP, QPoint eP ) : label(label), start(s), end(e), startPos(sP), endPos(eP){};
     ~Action(){qInfo()<<"Action from state: "<<this->start->getLabel()<<" to state: "<<this->end->getLabel()<<"DEAD";}
 
     void print();
@@ -27,11 +27,25 @@ public:
     void setEndPoint(QPoint *e){ endPos = *e; };
     QPoint getEndPoint() const { return endPos; };
 
+    /* Action label setter-getter */
+    void setLabel(QString l){ label = l; };
+    QString getLabel() const { return label; };
+
+    /* Add split to splits vector */
+    void addSplit( QPoint split ) { splits.append(split); };
+
+    /* Access splits vector -> please make const */
+    void getSplits( QVector<QPoint>::iterator &begin, QVector<QPoint>::iterator &end) { begin = splits.begin(); end = splits.end(); };
+
+    uint getSplitsSize(){ return splits.size(); };
+
 private:
+    QString label;
     State* start;
     State* end;
     QPoint startPos;
     QPoint endPos;
+    QVector <QPoint> splits;
 };
 
 #endif // ACTION_H
