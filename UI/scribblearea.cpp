@@ -110,7 +110,8 @@ void ScribbleArea::print()
 
     QPrintDialog printDialog(&printer, this);
 //! [21] //! [22]
-    if (printDialog.exec() == QDialog::Accepted) {
+    if (printDialog.exec() == QDialog::Accepted)
+    {
         QPainter painter(&printer);
         QRect rect = painter.viewport();
         QSize size = image.size();
