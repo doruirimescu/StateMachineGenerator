@@ -43,16 +43,19 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 
                 if( option.compare(editOptions[0]) == 0)
                 {/* Edit label */
+
                     QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label", QLineEdit::Normal, s->getLabel() );
                     s->setLabel( label );
                 }
                 else if( option.compare(editOptions[1]) == 0 )
                 {/* Edit code */
+
                     QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output", s->getCode() );
                     s->setCode( code );
                 }
                 else if( option.compare(editOptions[2]) == 0 )
                 {/* Delete state */
+
                     m->deleteState(s);
                 }
             }
@@ -60,9 +63,9 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         }
         else if( pAction == true )
         {/* If placing an action */
+
             if( pActionStart == false )
             {/* User wants to place the startpoint of the action */
-
                 pActionStart = true;
                 /* Create partial action*/
                 m->addAction( new Action( actionStart, actionEnd, actionStartPoint, invalidPoint ) );
@@ -96,6 +99,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 
         /* Delete from previous position */
         view->deleteCircleFrom(prevPoint);
+
         /* Draw at potentially new position */
         view->drawCircleTo(currentPoint);
 

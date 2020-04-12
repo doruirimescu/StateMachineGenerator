@@ -48,7 +48,7 @@ void Manager::printStates()
     }
 }
 State * Manager::searchState(QPoint pos)
-{//Search if there is a state at this position
+{/* Search if there is a state at this position */
     int r,x,y;
     for( const auto & i : states )
     {
@@ -85,7 +85,7 @@ QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
 {
     int r, x, y;
     for( const auto & i : states )
-    {/* Go for each state and determine if cursor in border*/
+    {/* Go for each state and determine if cursor in border */
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
