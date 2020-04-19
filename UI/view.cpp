@@ -16,6 +16,7 @@ void View::drawAction( Action *a)
     drawAnchor(a->getStartPoint());
     drawActionLineDev(a);
 
+    /* Draw action text */
     QPainter painter(&image);
     painter.setPen(QPen(QColor(0x1000E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
@@ -24,7 +25,18 @@ void View::drawAction( Action *a)
     a->getSplits(begin, end);
     QPoint split1 = *( begin + a->getSplitsSize() / 2 - 1 );
     QPoint split2 = *( begin + a->getSplitsSize() / 2 );
-    painter.drawStaticText(  split1.x()+ ( split2.x() - split1.x() ) / 2, split1.y() + ( split2.y() - split1.y() ) / 2, QStaticText( a->getLabel() ) ) ;
+
+    /* Choose text position */
+    qint16 textX = split1.x()+ ( split2.x() - split1.x() ) / 2;
+    qint16 textY = split1.y() + ( split2.y() - split1.y() ) / 2;
+
+    QRectF rect = painter.boundingRect( textX, textY, 50, 50, Qt::AlignHCenter,  a->getLabel() );
+    QRect r = QRect(textX - rect.width()/2 , textY, rect.width(), rect.height() );
+    /* Set rectangle background color to white */
+    brush.setColor( QColor( Qt::white) );
+    painter.fillRect(r, brush);
+    painter.drawRect(r);
+    painter.drawStaticText(textX - rect.width()/2, textY, QStaticText( a->getLabel() ) ) ;
 }
 
 void View::drawAnchor(const QPoint &endPoint)
