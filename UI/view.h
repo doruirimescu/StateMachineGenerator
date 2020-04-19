@@ -30,8 +30,9 @@ public:
     void drawAnchor(const QPoint &endPoint);
     void drawPossibleActionLine(const QPoint &start, const QPoint &end);
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter);
-    void drawAction( Action *a);
-    void drawActionLineDev( Action *a);//in development
+    void drawAction(const Action *const a);
+    void drawActionText(const Action *const a);
+    void drawActionLineDev(const Action *const a);//in development
 
     /* Line used for grids */
     void drawLine(const QPoint &start, const QPoint &end);

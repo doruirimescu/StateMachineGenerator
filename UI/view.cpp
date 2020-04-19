@@ -10,18 +10,25 @@ void View::drawLine(const QPoint &start, const QPoint &end)
     painter.drawLine(start, end);
 }
 
-void View::drawAction( Action *a)
+void View::drawAction(const Action *const a)
 {/* Draw a full action that has been completed */
     drawAnchor(a->getEndPoint());
     drawAnchor(a->getStartPoint());
     drawActionLineDev(a);
 
     /* Draw action text */
+    if( a->getSplitsSize() > 1 )
+    {/* Need at least 2 splits to draw text in between them */
+        drawActionText(a);
+    }
+}
+void View::drawActionText(const Action *const a)
+{
     QPainter painter(&image);
     painter.setPen(QPen(QColor(0x1000E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
-    QVector<QPoint>::iterator begin;
-    QVector<QPoint>::iterator end;
+    QVector<QPoint>::const_iterator begin;
+    QVector<QPoint>::const_iterator end;
     a->getSplits(begin, end);
     QPoint split1 = *( begin + a->getSplitsSize() / 2 - 1 );
     QPoint split2 = *( begin + a->getSplitsSize() / 2 );
@@ -38,7 +45,6 @@ void View::drawAction( Action *a)
     painter.drawRect(r);
     painter.drawStaticText(textX - rect.width()/2, textY, QStaticText( a->getLabel() ) ) ;
 }
-
 void View::drawAnchor(const QPoint &endPoint)
 {/* Draw anchor point where an action could join */
     QPainter painter(&image);
@@ -53,11 +59,11 @@ void View::drawAnchor(const QPoint &endPoint)
     painter.end();
 }
 
-void View::drawActionLineDev( Action *a)
+void View::drawActionLineDev(const Action *const a)
 {
     /* Get all the split points of the action */
-    QVector<QPoint>::iterator begin;
-    QVector<QPoint>::iterator end;
+    QVector<QPoint>::const_iterator begin;
+    QVector<QPoint>::const_iterator end;
     a->getSplits(begin, end);
 
     /* Define the points needed for drawing an arrow */
