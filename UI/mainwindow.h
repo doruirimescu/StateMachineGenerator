@@ -38,7 +38,7 @@ private slots:
     void stateColor();
     void changeGrid();
     void changeRadius();
-
+    void generateCode();
 private:
     void createActions();
     void createMenus();
@@ -70,6 +70,7 @@ private:
     QAction *editStateAct;
     QAction *placeActionAct;
     QAction *editActionAct;
+    QAction *generateCodeAct;
 
 };
 //! [0]

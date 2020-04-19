@@ -109,14 +109,16 @@ void MainWindow::editState()
 {/* User is editing a state */
 
     scribbleArea->eState = true;
-    qInfo()<<"Edit state";
     QApplication::setOverrideCursor(Qt::PointingHandCursor);
 }
 void MainWindow::editAction()
 {/* User is editing an action */
 
     scribbleArea->eAction = true;
-    qInfo()<<"Edit Action";
+}
+void MainWindow::generateCode()
+{
+    scribbleArea->generateCode();
 }
 void MainWindow::penWidth()
 {
@@ -210,6 +212,10 @@ void MainWindow::createActions()
     editActionAct = new QAction(tr("Edit Action"), this);
     editActionAct->setShortcut(tr("Ctrl+A"));
     connect(editActionAct, &QAction::triggered, this, &MainWindow::editAction);
+
+    generateCodeAct = new QAction(tr("Generate Code"), this);
+    generateCodeAct->setShortcut(tr("Ctrl+G"));
+    connect(generateCodeAct, &QAction::triggered, this, &MainWindow::generateCode);
 }
 
 void MainWindow::createMenus()
@@ -247,6 +253,7 @@ void MainWindow::createMenus()
     stateMenu->addAction(editStateAct);
     stateMenu->addAction(placeActionAct);
     stateMenu->addAction(editActionAct);
+    stateMenu->addAction(generateCodeAct);
 
     /* Add menus to menu bar */
     menuBar()->addMenu(fileMenu);
