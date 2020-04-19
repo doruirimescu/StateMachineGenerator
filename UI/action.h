@@ -12,19 +12,19 @@ public:
     void print();
 
     /* Start state setter-getter */
-    void setStart(State* &s){ start = s; };
+    void setStart(State* const &s){ start = s; };
     State* getStart() const { return start; };
 
     /* End state setter-getter */
-    void setEnd(State* &e){ end = e; };
+    void setEnd(State* const &e){ end = e; };
     State* getEnd() const { return end; };
 
     /* Start anchor position setter-getter */
-    void setStartPoint(QPoint* s){ startPos = *s; };
+    void setStartPoint(const QPoint* s){ startPos = *s; };
     QPoint getStartPoint() const { return startPos; };
 
     /* End anchor position setter-getter */
-    void setEndPoint(QPoint *e){ endPos = *e; };
+    void setEndPoint(const QPoint *e){ endPos = *e; };
     QPoint getEndPoint() const { return endPos; };
 
     /* Set start and end anchors (R/L/U/D) */
