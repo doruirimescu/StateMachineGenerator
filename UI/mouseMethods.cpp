@@ -23,6 +23,10 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             }
             pState = false;
         }
+        else if( mState && !m->intersectState(currentPoint, movingState) )
+        {
+            mState = false;
+        }
         else if( eState )
         {/* State editing is opened */
 
@@ -35,6 +39,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                 QStringList editOptions;
                 editOptions << "Edit label";
                 editOptions << "Edit output code";
+                editOptions << "Edit position";
                 editOptions << "Delete state";
 
                 QInputDialog *dialog = new QInputDialog;
@@ -45,20 +50,22 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 
                 if( option.compare(editOptions[0]) == 0)
                 {/* Edit label */
-
                     QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",
                                                      QLineEdit::Normal, s->getLabel() );
                     s->setLabel( label );
                 }
                 else if( option.compare(editOptions[1]) == 0 )
                 {/* Edit code */
-
                     QString code = dialog->getMultiLineText( this, "Edit code", "Enter the C++ code to \nrun on state output", s->getCode() );
                     s->setCode( code );
                 }
                 else if( option.compare(editOptions[2]) == 0 )
+                {/* Edit position */
+                    mState = true;
+                    movingState = s;
+                }
+                else if( option.compare(editOptions[3]) == 0 )
                 {/* Delete state */
-
                     m->deleteState(s);
                 }
             }
@@ -72,10 +79,10 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             {/* User wants to place the startpoint of the action */
                 pActionStart = true;
                 /* Create partial action*/
-                //QString actLabel= QInputDialog::getText(this, "Action label", "Enter new action label");
-
-                m->addAction( new Action( "actLabel", actionStart, actionEnd, actionStartPoint, invalidPoint ) );
+                QString actionLabel= QInputDialog::getText(this, "Action label", "Enter new action label");
+                m->addAction( new Action( actionLabel, actionStart, actionEnd, actionStartPoint, invalidPoint ) );
                 m->getLastAction()->addSplit( actionStartPoint );
+                m->getLastAction()->setStartAnchor(actionStartAnchor);
             }
             else if( pActionStart == true )
             {/* Action startpoint placement has finished */
@@ -106,6 +113,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                     Action *lastAct = m->getLastAction();
                     lastAct->setEnd(actionEnd);
                     lastAct->setEndPoint(&actionEndPoint);
+                    lastAct->setEndAnchor(actionEndAnchor);
                     pActionStart = false;
                     pAction = false;
                     tst = false;
@@ -136,6 +144,10 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 
         /* Update old position with new position */
     }
+    else if (mState)
+    {
+        movingState->setPos(currentPoint);
+    }
     else if( pAction )
     {/* If placing action */
 
@@ -151,12 +163,14 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
                 /* Save current state to the startpoint of the action */
                 actionStart = m->searchState(possibleAnchorPoint);
                 actionStartPoint = possibleAnchorPoint;
+                actionStartAnchor = posInfo;
             }
             else if( pActionStart == true )
             {/* The user is placing an action endpoint */
 
                 actionEnd = m->searchState(possibleAnchorPoint);
                 actionEndPoint = possibleAnchorPoint;
+                actionEndAnchor = posInfo;
             }
         }
         else
