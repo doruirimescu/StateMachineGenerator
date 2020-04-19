@@ -14,6 +14,7 @@ public:
     void deleteState( State * s );
     State * searchState( QPoint pos );
     bool intersectState( QPoint pos );
+    bool intersectState( QPoint pos, State *s );
     QPoint onStateBorder( QPoint pos, QString & posInfo );
     void printStates();
 

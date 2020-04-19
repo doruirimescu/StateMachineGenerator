@@ -27,6 +27,7 @@ void Manager::deleteState(State *s)
     {
         if( states[ i ] == s )
         {
+            qInfo()<<"Deleting";
             for( int j = 0; j < actions.size(); ++j )
             {
                 if( actions[j]->getStart() == s || actions[j]->getEnd() == s )
@@ -84,6 +85,24 @@ bool Manager::intersectState(QPoint pos)
     }
     return false;
 }
+bool Manager::intersectState(QPoint pos, State * s)
+{
+    int r,x,y;
+    for( const auto & i : states )
+    {/* Check all the states */
+        r = i->getRad();
+        x = i->getPos().x();
+        y = i->getPos().y();
+
+        if( i != s && qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
+        {
+            qInfo()<< "Intersect state ";
+            return true;
+        }
+    }
+    return false;
+}
+
 QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
 {
     int r, x, y;
