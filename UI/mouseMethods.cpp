@@ -86,7 +86,6 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             }
             else if( pActionStart == true )
             {/* Action startpoint placement has finished */
-                tst = true;
 
                 if( actionEndPoint != invalidPoint )
                 {
@@ -116,9 +115,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                     lastAct->setEndAnchor(actionEndAnchor);
                     pActionStart = false;
                     pAction = false;
-                    tst = false;
                 }
-
                 lastAct->addSplit(currentPoint);
             }
         }
@@ -134,7 +131,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     x = Maths::roundToGrid( event->pos().x(), view->getGridSize() );
     y = Maths::roundToGrid( event->pos().y(), view->getGridSize() );
     QPoint currentPoint = QPoint(x,y);
-
     drawGrid();
     if( pState )
     {/* If moving mouse while placing state */
