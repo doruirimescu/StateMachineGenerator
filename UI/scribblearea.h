@@ -48,8 +48,12 @@ public:
     void setPenWidth(int newWidth) const {view->setPenWidth(newWidth);};
     int getPenWidth() const { return view->getPenWidth(); }
 
+    /* Called for code generation */
+    void generateCode();
+
     /* State variables for the menu */
     bool pState;        //If user is placing state
+    bool mState;        //If user is moving state
     bool pAction;       //If user is placing action
     bool pActionStart;  //If user is placing the startpoint of the action true, if endpoint is placed, false
     bool eState;        //If user is editing state
@@ -61,7 +65,10 @@ public:
     QPoint actionStartPoint;
     State* actionEnd;
     QPoint actionEndPoint;
+    QString actionStartAnchor;
+    QString actionEndAnchor;
 
+    State *movingState;
 public slots:
     void clearImage();
     void print();

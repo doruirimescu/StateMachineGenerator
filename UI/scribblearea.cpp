@@ -1,4 +1,5 @@
 #include "scribblearea.h"
+#include <QSet>
 /*
  * The area which reacts to user inputs
  */
@@ -14,23 +15,91 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     eState  = false;
     eAction = false;
     tst     = false;
+    mState  = false;
 
     actionStartPoint = invalidPoint;
     actionEndPoint   = invalidPoint;
-    pActionStart= false;
+    pActionStart     = false;
 
     /* Create a manager */
     m = new Manager();
 }
+
 void ScribbleArea::clearImage()
 {
     image.fill(qRgb(255, 255, 255));
 }
+
 void ScribbleArea::clearStates()
 {/* Clear all states */
     m->states.clear();
 }
+void ScribbleArea::generateCode()
+{
+    QString filename="DataR.txt";
+    QFile file( filename );
+    if ( file.open(QIODevice::ReadWrite) )
+    {
+        QTextStream stream( &file );
 
+        QSet<QString> labels;
+        for( auto const & a : m->actions )
+        {
+           labels.insert(a->getLabel());
+        }
+        stream<<"#Label\t\t\t\t";
+        for( auto const & l : labels )
+        {
+             stream<<l<<"\t\t\t\t";
+        }
+        stream<<endl;
+
+        int ctrL = 0, ctrS = 0;
+        stream<<"[";
+        for( auto const &s : m->states )
+        {
+            ctrS ++;
+            stream<<"( \""<<s->getLabel()<<"\"";
+            ctrL = 0;
+            for( auto const &l : labels )
+            {
+                bool found = false;
+                for( auto const &a : m->actions )
+                {
+                    if( a->getLabel().compare( l ) == 0 )
+                    {
+                        if( a->getStart() == s )
+                        {
+                            stream<<",\""<<a->getEnd()->getLabel()<<"\"";
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if( !found )
+                {
+                    stream<<",-1";
+                }
+                ctrL++;
+                if( ctrL < labels.size() )
+                {
+                    stream<<"\t\t";
+                }
+            }
+            if( ctrS < m->states.size() )
+            {
+                stream<<"),\n";
+            }
+            else
+            {
+                stream<<",)";
+            }
+        }
+        stream<<"]";
+    }
+    file.close();
+    qInfo()<<"Generating code";
+}
 void ScribbleArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
@@ -56,7 +125,6 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
     drawGrid();
 }
-
 
 void ScribbleArea::drawGrid()
 {
@@ -86,6 +154,12 @@ void ScribbleArea::drawGrid()
         }
         else
         {
+            /* In case a state is moved */
+            a->replaceStart();
+            if( a->getEndPoint() != invalidPoint )
+            {
+                a->replaceEnd();
+            }
             view->drawAction(a);
         }
     }
