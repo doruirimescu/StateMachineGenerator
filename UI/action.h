@@ -27,6 +27,14 @@ public:
     void setEndPoint(QPoint *e){ endPos = *e; };
     QPoint getEndPoint() const { return endPos; };
 
+    /* Set start and end anchors (R/L/U/D) */
+    void setStartAnchor(QString s){ startAnchor = s; };
+    void setEndAnchor(QString s){ endAnchor = s; };
+
+    /* start replaced, end replaced*/
+    void replaceStart();
+    void replaceEnd();
+
     /* Action label setter-getter */
     void setLabel(QString l){ label = l; };
     QString getLabel() const { return label; };
@@ -46,6 +54,8 @@ private:
     QPoint startPos;
     QPoint endPos;
     QVector <QPoint> splits;
+    QString startAnchor;//R/L/U/D
+    QString endAnchor;  //R/L/U/D
 };
 
 #endif // ACTION_H
