@@ -42,10 +42,10 @@ public:
     /* Add split to splits vector */
     void addSplit( QPoint split ) { splits.append(split); };
 
-    /* Access splits vector -> please make const */
-    void getSplits( QVector<QPoint>::iterator &begin, QVector<QPoint>::iterator &end) { begin = splits.begin(); end = splits.end(); };
+    /* Access splits vector */
+    void getSplits( QVector<QPoint>::const_iterator &begin, QVector<QPoint>::const_iterator &end) const{ begin = splits.begin(); end = splits.end(); };
 
-    uint getSplitsSize(){ return splits.size(); };
+    uint getSplitsSize()const{ return splits.size(); };
 
 private:
     QString label;
