@@ -68,7 +68,7 @@ State * Manager::searchState(QPoint pos)
     }
     return nullptr;
 }
-bool Manager::intersectState(QPoint pos)
+bool Manager::intersectState(QPoint pos, int gridSize )
 {
     int r,x,y;
     for( const auto & i : states )
@@ -77,7 +77,7 @@ bool Manager::intersectState(QPoint pos)
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
+        if( qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
@@ -85,7 +85,7 @@ bool Manager::intersectState(QPoint pos)
     }
     return false;
 }
-bool Manager::intersectState(QPoint pos, State * s)
+bool Manager::intersectState(QPoint pos, State * s, int gridSize)
 {
     int r,x,y;
     for( const auto & i : states )
@@ -94,7 +94,7 @@ bool Manager::intersectState(QPoint pos, State * s)
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( i != s && qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
+        if( i != s && qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
@@ -241,6 +241,17 @@ void Manager::Astar(int gridSize, int width, int height)
                     a->addSplit( QPoint( agent.getX() * gridSize, agent.getY() * gridSize ) );
                 }
             }
+        }
+        else
+        {
+            /* There was no good result */
+            a->clearSplits();
+
+            a->addSplit(a->getStartPoint());
+            int splitPoint = Maths::roundToGrid( a->getStartPoint().x() + ( a->getEndPoint().x() - a->getStartPoint().x() ) / 2, gridSize );
+            a->addSplit( QPoint ( splitPoint, a->getStartPoint().y() ) );
+            a->addSplit( QPoint ( splitPoint, a->getEndPoint().y() ) );
+            a->addSplit( a->getEndPoint() );
         }
     }
     MAPPGridState::walls.clear();
