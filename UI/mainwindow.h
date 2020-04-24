@@ -39,6 +39,7 @@ private slots:
     void changeGrid();
     void changeRadius();
     void generateCode();
+    void rearrangeActions();
 private:
     void createActions();
     void createMenus();
@@ -71,6 +72,7 @@ private:
     QAction *placeActionAct;
     QAction *editActionAct;
     QAction *generateCodeAct;
+    QAction *rearrangeActionsAct;
 
 };
 //! [0]

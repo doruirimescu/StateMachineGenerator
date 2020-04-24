@@ -120,6 +120,10 @@ void MainWindow::generateCode()
 {
     scribbleArea->generateCode();
 }
+void MainWindow::rearrangeActions()
+{
+    scribbleArea->rearrangeActions();
+}
 void MainWindow::penWidth()
 {
     bool ok;
@@ -216,6 +220,10 @@ void MainWindow::createActions()
     generateCodeAct = new QAction(tr("Generate Code"), this);
     generateCodeAct->setShortcut(tr("Ctrl+G"));
     connect(generateCodeAct, &QAction::triggered, this, &MainWindow::generateCode);
+
+    rearrangeActionsAct = new QAction(tr("Rearrange action arrows"), this);
+    rearrangeActionsAct->setShortcut(tr("Ctrl+R"));
+    connect(rearrangeActionsAct, &QAction::triggered, this, &MainWindow::rearrangeActions);
 }
 
 void MainWindow::createMenus()
@@ -254,6 +262,7 @@ void MainWindow::createMenus()
     stateMenu->addAction(placeActionAct);
     stateMenu->addAction(editActionAct);
     stateMenu->addAction(generateCodeAct);
+    stateMenu->addAction(rearrangeActionsAct);
 
     /* Add menus to menu bar */
     menuBar()->addMenu(fileMenu);
