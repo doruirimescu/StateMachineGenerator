@@ -165,7 +165,6 @@ void ScribbleArea::drawGrid()
             {
                 a->replaceEnd();
             }
-            view->drawAction(a);
         }
         else
         {
@@ -174,7 +173,6 @@ void ScribbleArea::drawGrid()
     }
     update();
 }
-
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)
