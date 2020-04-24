@@ -42,10 +42,14 @@ public:
     /* Add split to splits vector */
     void addSplit( QPoint split ) { splits.append(split); };
 
+    void clearSplits(){ splits.clear(); }
+
     /* Access splits vector */
     void getSplits( QVector<QPoint>::const_iterator &begin, QVector<QPoint>::const_iterator &end) const{ begin = splits.begin(); end = splits.end(); };
 
     uint getSplitsSize()const{ return splits.size(); };
+
+    bool hasAnchorAt(const QPoint &p)const;
 
 private:
     QString label;
