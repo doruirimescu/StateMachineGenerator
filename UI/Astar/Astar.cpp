@@ -17,8 +17,14 @@ vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
 
         minCost.insert({n,0});
         bool going = true;
+        unsigned int ctr = 0;
         while( !Q.empty() && going )
         {
+            ctr ++;
+            if( ctr > 50000 )
+            {   OUTPUT<<"STUCK";
+                return {grid};
+            }
             n = Q.top();
             Q.pop();
             for( auto &succ : n.successors() )
@@ -39,7 +45,7 @@ vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
             if( n.getH() == 0 )
             {
                 going = false;
-                OUTPUT<<"Found a result"<<endline;
+                OUTPUT<<"Found a result"<< ctr<<endline;
             }
         }
         
