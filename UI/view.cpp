@@ -58,7 +58,20 @@ void View::drawAnchor(const QPoint &endPoint)
     painter.drawEllipse(endPoint, 5, 5 );
     painter.end();
 }
+void View::drawPossibleAnchor(const QPoint &endPoint)
+{/* Draw a possible anchor point where an action could join */
+    QPainter painter(&image);
+    /*Remove previous point*/
+    painter.setBrush( ( QColor(Qt::white) ) );
+    painter.drawEllipse(endPoint, 6, 6 );
 
+    painter.setPen( QPen( QColor(0x3333FF), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush( QColor(0xC0D3E6) );
+    painter.setOpacity(0.2);
+    painter.drawEllipse(endPoint, 6, 6 );
+    painter.end();
+
+}
 void View::drawActionLineDev(const Action *const a)
 {
     /* Get all the split points of the action */

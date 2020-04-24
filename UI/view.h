@@ -28,6 +28,7 @@ public:
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
+    void drawPossibleAnchor(const QPoint &endPoint);
     void drawPossibleActionLine(const QPoint &start, const QPoint &end);
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter);
     void drawAction(const Action *const a);
