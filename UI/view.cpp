@@ -213,3 +213,20 @@ void View::drawCircleTo(const QPoint &endPoint)
     painter.drawEllipse( endPoint, stateRadius, stateRadius );
     painter.end();
 }
+
+void View::drawInvalidCircleTo(const QPoint &endPoint)
+{/* Draw current ellipse */
+
+    QPainter painter(&image);
+    /* Clear gridline where new circle is drawn */
+    painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush( QColor(0xffffff) );
+    painter.drawEllipse( endPoint, stateRadius, stateRadius );
+
+    /* Draw new circle */
+    painter.setPen( QPen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush(QColor(Qt::red));
+    painter.setOpacity(0.3);
+    painter.drawEllipse( endPoint, stateRadius, stateRadius );
+    painter.end();
+}

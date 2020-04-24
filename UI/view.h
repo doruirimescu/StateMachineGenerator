@@ -25,6 +25,7 @@ public:
     /* State-related drawing */
     void drawState(const State *s);
     void drawCircleTo(const QPoint &endPoint);
+    void drawInvalidCircleTo(const QPoint &endPoint);
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
