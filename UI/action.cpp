@@ -53,7 +53,7 @@ void Action::replaceEnd()
             endPos = newPos - QPoint( 0, end->getRad() );
             splits.replace(splits.size() - 1, endPos);
         }
-        else if( startAnchor.compare("D") == 0 )
+        else if( endAnchor.compare("D") == 0 )
         {
             endPos = newPos + QPoint( 0, end->getRad() );
             splits.replace(splits.size() - 1, endPos);

@@ -157,7 +157,7 @@ void ScribbleArea::drawGrid()
         {/* Action not finished, only draw anchor */
             view->drawAnchor( a->getStartPoint() );
         }
-        else
+        else if( mState )
         {
             /* In case a state is moved */
             a->replaceStart();
@@ -165,6 +165,10 @@ void ScribbleArea::drawGrid()
             {
                 a->replaceEnd();
             }
+            view->drawAction(a);
+        }
+        else
+        {
             view->drawAction(a);
         }
     }

@@ -26,6 +26,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         else if( mState && !m->intersectState(currentPoint, movingState) )
         {
             mState = false;
+            m->Astar( getGridSize(), width(), height() );
         }
         else if( eState )
         {/* State editing is opened */
@@ -75,7 +76,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         else if( pAction == true )
         {/* If placing an action */
 
-            if( pActionStart == false )
+            if( pActionStart == false && m->states.size() > 0 && actionStartPoint != invalidPoint )
             {/* User wants to place the startpoint of the action */
                 pActionStart = true;
                 /* Create partial action*/
@@ -152,7 +153,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
         if( possibleAnchorPoint != invalidPoint )
         {/* If cursor is at any valid anchor point */
 
-            view->drawAnchor( possibleAnchorPoint );
+            view->drawPossibleAnchor( possibleAnchorPoint );
             if( pActionStart == false )
             {/* The user is placing an action startpoint */
 

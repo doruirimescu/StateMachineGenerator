@@ -1,9 +1,9 @@
-#include "agent.hpp"
+#include "Agent.hpp"
 
 void Agent::show() const
 {/* Print agent information */
-    qDebug() << label << " at:(" << X << ", " << Y << ")" << " goal: (" << goalX <<
-    ", "<< goalY << ")" << " heuristic: " << getH() << Qt::endl;
+    OUTPUT << label << " at:(" << X << ", " << Y << ")" << " goal: (" << goalX <<
+    ", "<< goalY << ")" << " heuristic: " << getH() << endline;
 }
 
 bool Agent::operator == (const Agent &a)const
