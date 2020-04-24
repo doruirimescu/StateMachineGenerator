@@ -99,6 +99,12 @@ void ScribbleArea::generateCode()
     file.close();
     qInfo()<<"Generating code";
 }
+
+void ScribbleArea::rearrangeActions()
+{
+    m->Astar( getGridSize(), width(), height() );
+}
+
 void ScribbleArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);

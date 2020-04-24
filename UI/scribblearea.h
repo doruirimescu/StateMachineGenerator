@@ -51,6 +51,9 @@ public:
     /* Called for code generation */
     void generateCode();
 
+    /* Called for A* action rearrangement */
+    void rearrangeActions();
+
     /* State variables for the menu */
     bool pState;        //If user is placing state
     bool mState;        //If user is moving state
