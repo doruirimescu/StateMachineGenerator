@@ -68,7 +68,7 @@ State * Manager::searchState(QPoint pos)
     }
     return nullptr;
 }
-bool Manager::intersectState(QPoint pos)
+bool Manager::intersectState(QPoint pos, int gridSize )
 {
     int r,x,y;
     for( const auto & i : states )
@@ -77,7 +77,7 @@ bool Manager::intersectState(QPoint pos)
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
+        if( qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
@@ -85,7 +85,7 @@ bool Manager::intersectState(QPoint pos)
     }
     return false;
 }
-bool Manager::intersectState(QPoint pos, State * s)
+bool Manager::intersectState(QPoint pos, State * s, int gridSize)
 {
     int r,x,y;
     for( const auto & i : states )
@@ -94,7 +94,7 @@ bool Manager::intersectState(QPoint pos, State * s)
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( i != s && qFabs( pos.x() - x ) < 2 * r && qFabs( pos.y() - y ) < 2 * r )
+        if( i != s && qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
@@ -176,4 +176,83 @@ void Manager::deleteAction(Action *a)
         }
     }
     delete a;
+}
+vector<Wall> MAPPGridState::walls = {};
+
+void Manager::Astar(int gridSize, int width, int height)
+{
+    /*
+     * Create walls around each state
+     */
+    for( const auto &s : states )
+    {
+        QPoint center = s->getPos();
+        int rad = s->getRad();
+
+        for(int x = center.x() - rad; x <= center.x() + rad; x += gridSize )
+        {
+            if( x!= center.x() )
+            {
+                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad) / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad) / gridSize ) );
+            }
+            else
+            {
+                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad - gridSize)/ gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad + gridSize)/ gridSize ) );
+            }
+        }
+        for( int y = center.y() - rad; y <= center.y() + rad; y += gridSize )
+        {
+            if( y != center.y() )
+            {
+                MAPPGridState::walls.push_back( Wall( ( center.x() + rad ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( ( center.x() - rad ) / gridSize, y / gridSize ) );
+            }
+            else
+            {
+                MAPPGridState::walls.push_back( Wall( ( center.x() + rad - gridSize ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( ( center.x() - rad + gridSize ) / gridSize, y / gridSize ) );
+            }
+        }
+    }
+    /*
+     * Go through each action, solve A*, add walls
+     */
+    for( auto &a : actions )
+    {
+        vector<Agent> agents;
+        unsigned int sX = a->getStartPoint().x() / gridSize;
+        unsigned int sY = a->getStartPoint().y() / gridSize;
+        unsigned int gX = a->getEndPoint().x() / gridSize;
+        unsigned int gY = a->getEndPoint().y() / gridSize;
+        agents.emplace_back( Agent( sX, sY, gX, gY, a->getLabel() ) );
+        MAPPGridState grid(agents, width, height, 0 );
+        vector<MAPPGridState> results = Astar::astar(grid);
+
+        if( results.back().getH() == 0 )
+        {/* Found a good result */
+            a->clearSplits();
+            for( const auto r : results )
+            {
+                for( const auto agent : r.agents )
+                {/* Add walls around arrow */
+                    MAPPGridState::walls.push_back( Wall( agent.getX(), agent.getY() ) );
+                    a->addSplit( QPoint( agent.getX() * gridSize, agent.getY() * gridSize ) );
+                }
+            }
+        }
+        else
+        {
+            /* There was no good result */
+            a->clearSplits();
+
+            a->addSplit(a->getStartPoint());
+            int splitPoint = Maths::roundToGrid( a->getStartPoint().x() + ( a->getEndPoint().x() - a->getStartPoint().x() ) / 2, gridSize );
+            a->addSplit( QPoint ( splitPoint, a->getStartPoint().y() ) );
+            a->addSplit( QPoint ( splitPoint, a->getEndPoint().y() ) );
+            a->addSplit( a->getEndPoint() );
+        }
+    }
+    MAPPGridState::walls.clear();
 }

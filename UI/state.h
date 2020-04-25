@@ -41,6 +41,7 @@ public:
     void setRad(int r){ radius = r; };
     int getRad() const { return radius; };
 
+    void bonundToDrawingArea( int width, int height, int gridSize);
 private:
     QString code; //code that runs when the state outputs
     QPen   pen; //for drawing borders

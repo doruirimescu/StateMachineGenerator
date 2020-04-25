@@ -99,6 +99,12 @@ void ScribbleArea::generateCode()
     file.close();
     qInfo()<<"Generating code";
 }
+
+void ScribbleArea::rearrangeActions()
+{
+    m->Astar( getGridSize(), width(), height() );
+}
+
 void ScribbleArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
@@ -151,7 +157,7 @@ void ScribbleArea::drawGrid()
         {/* Action not finished, only draw anchor */
             view->drawAnchor( a->getStartPoint() );
         }
-        else
+        else if( mState )
         {
             /* In case a state is moved */
             a->replaceStart();
@@ -159,12 +165,14 @@ void ScribbleArea::drawGrid()
             {
                 a->replaceEnd();
             }
+        }
+        else
+        {
             view->drawAction(a);
         }
     }
     update();
 }
-
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)

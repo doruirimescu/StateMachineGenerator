@@ -5,6 +5,13 @@
 #include <action.h>
 #include <QMap>
 #include "maths.h"
+#include "Astar/porting.hpp"
+#include "Astar/Agent.hpp"
+#include "Astar/Wall.hpp"
+#include "Astar/heuristic.hpp"
+#include "Astar/MAPPGridState.hpp"
+#include "Astar/Astar.hpp"
+
 class Manager
 {
 public:
@@ -13,8 +20,8 @@ public:
     void addState( State * s );
     void deleteState( State * s );
     State * searchState( QPoint pos );
-    bool intersectState( QPoint pos );
-    bool intersectState( QPoint pos, State *s );
+    bool intersectState( QPoint pos, int gridSize );
+    bool intersectState( QPoint pos, State *s, int gridSize );
     QPoint onStateBorder( QPoint pos, QString & posInfo );
     void printStates();
 
@@ -24,6 +31,7 @@ public:
     QVector <Action*> actions;
     Action* getLastAction();
     void deleteAction( Action *a );
+    void Astar(int gridSize, int width, int height);
 };
 
 #endif // MANAGER_H

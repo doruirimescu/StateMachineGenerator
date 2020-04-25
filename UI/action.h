@@ -12,19 +12,19 @@ public:
     void print();
 
     /* Start state setter-getter */
-    void setStart(State* &s){ start = s; };
+    void setStart(State* const &s){ start = s; };
     State* getStart() const { return start; };
 
     /* End state setter-getter */
-    void setEnd(State* &e){ end = e; };
+    void setEnd(State* const &e){ end = e; };
     State* getEnd() const { return end; };
 
     /* Start anchor position setter-getter */
-    void setStartPoint(QPoint* s){ startPos = *s; };
+    void setStartPoint(const QPoint* s){ startPos = *s; };
     QPoint getStartPoint() const { return startPos; };
 
     /* End anchor position setter-getter */
-    void setEndPoint(QPoint *e){ endPos = *e; };
+    void setEndPoint(const QPoint *e){ endPos = *e; };
     QPoint getEndPoint() const { return endPos; };
 
     /* Set start and end anchors (R/L/U/D) */
@@ -42,10 +42,14 @@ public:
     /* Add split to splits vector */
     void addSplit( QPoint split ) { splits.append(split); };
 
+    void clearSplits(){ splits.clear(); }
+
     /* Access splits vector */
     void getSplits( QVector<QPoint>::const_iterator &begin, QVector<QPoint>::const_iterator &end) const{ begin = splits.begin(); end = splits.end(); };
 
     uint getSplitsSize()const{ return splits.size(); };
+
+    bool hasAnchorAt(const QPoint &p)const;
 
 private:
     QString label;

@@ -58,7 +58,20 @@ void View::drawAnchor(const QPoint &endPoint)
     painter.drawEllipse(endPoint, 5, 5 );
     painter.end();
 }
+void View::drawPossibleAnchor(const QPoint &endPoint)
+{/* Draw a possible anchor point where an action could join */
+    QPainter painter(&image);
+    /*Remove previous point*/
+    painter.setBrush( ( QColor(Qt::white) ) );
+    painter.drawEllipse(endPoint, 6, 6 );
 
+    painter.setPen( QPen( QColor(0x3333FF), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush( QColor(0xC0D3E6) );
+    painter.setOpacity(0.2);
+    painter.drawEllipse(endPoint, 6, 6 );
+    painter.end();
+
+}
 void View::drawActionLineDev(const Action *const a)
 {
     /* Get all the split points of the action */
@@ -197,6 +210,23 @@ void View::drawCircleTo(const QPoint &endPoint)
     painter.setPen( QPen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
     painter.setBrush(stateColor);
     painter.setOpacity(0.2);
+    painter.drawEllipse( endPoint, stateRadius, stateRadius );
+    painter.end();
+}
+
+void View::drawInvalidCircleTo(const QPoint &endPoint)
+{/* Draw current ellipse */
+
+    QPainter painter(&image);
+    /* Clear gridline where new circle is drawn */
+    painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush( QColor(0xffffff) );
+    painter.drawEllipse( endPoint, stateRadius, stateRadius );
+
+    /* Draw new circle */
+    painter.setPen( QPen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
+    painter.setBrush(QColor(Qt::red));
+    painter.setOpacity(0.3);
     painter.drawEllipse( endPoint, stateRadius, stateRadius );
     painter.end();
 }
