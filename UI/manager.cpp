@@ -80,7 +80,6 @@ bool Manager::intersectState(QPoint pos, State * s, int gridSize)
         qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
         if( i != s && dist < 2 * ( r + gridSize ) )
         {
-            qInfo()<< "Intersect state ";
             return true;
         }
     }
@@ -157,7 +156,6 @@ void Manager::mapStateToActions()
     if( stateActionEndMap.find( a->getEnd()) == stateActionEndMap.end() )
     {/* Mapping does not exist. Create it. */
         stateActionEndMap.insert( a->getEnd(), {a} );
-        qInfo()<<(a->getEnd()->getLabel());
     }
     else
     {
@@ -244,8 +242,9 @@ void Manager::Astar(int gridSize, int width, int height)
     /*
      * Go through each action, solve A*, add walls
      */
+    std::sort(actions.begin(), actions.end());
     for( auto &a : actions )
-    {
+    {   qInfo()<<a->getLabel();
         vector<Agent> agents;
         unsigned int sX = a->getStartPoint().x() / gridSize;
         unsigned int sY = a->getStartPoint().y() / gridSize;
