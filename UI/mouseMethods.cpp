@@ -11,10 +11,6 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    /* Update the current point location */
-    currentPoint.setX(Maths::roundToGrid( event->pos().x(), view->getGridSize() ));
-    currentPoint.setY(Maths::roundToGrid( event->pos().y(), view->getGridSize() ));
-
     if( pState && !m->intersectState( currentPoint, getGridSize() ) )
     {/* State placement is done, and we are not intersecting another state */
 
@@ -130,10 +126,10 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 {/* When user is moving the mouse */
 
-    int x, y;
-    x = Maths::roundToGrid( event->pos().x(), view->getGridSize() );
-    y = Maths::roundToGrid( event->pos().y(), view->getGridSize() );
-    QPoint currentPoint = QPoint(x,y);
+    updateCurrentPoint( Maths::roundToGrid( event->pos().x(), view->getGridSize() ),
+                        Maths::roundToGrid( event->pos().y(), view->getGridSize() )
+                        );
+
     drawGrid();
     if( pState && m->intersectState(currentPoint, getGridSize() ) )
     {/* Placing a state, but intersecting another one */

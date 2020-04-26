@@ -88,6 +88,7 @@ private:
     void drawGrid();
     void clearStates();
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
+    void updateCurrentPoint(int x, int y) { currentPoint = QPoint(x, y); };
 
     bool modified = false;
     bool scribbling = false;
