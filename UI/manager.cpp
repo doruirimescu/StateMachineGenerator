@@ -69,15 +69,16 @@ State * Manager::searchState(QPoint pos)
     return nullptr;
 }
 bool Manager::intersectState(QPoint pos, int gridSize )
-{
-    int r,x,y;
+{/* Check if specified position intersects any state */
+    int r, x, y;
     for( const auto & i : states )
     {/* Check all the states */
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
 
-        if( qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
+        qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
+        if( dist < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
@@ -86,15 +87,15 @@ bool Manager::intersectState(QPoint pos, int gridSize )
     return false;
 }
 bool Manager::intersectState(QPoint pos, State * s, int gridSize)
-{
-    int r,x,y;
+{/* Check if specified position itnersects any state besides s*/
+    int r, x, y;
     for( const auto & i : states )
     {/* Check all the states */
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
-
-        if( i != s && qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
+        qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
+        if( i != s && dist < 2 * ( r + gridSize ) )
         {
             qInfo()<< "Intersect state ";
             return true;
