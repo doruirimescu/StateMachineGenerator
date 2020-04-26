@@ -76,7 +76,6 @@ void MainWindow::changeGrid()
                                         "Enter a new grid size multiple of 10", scribbleArea->getGridSize() );
     }
     scribbleArea->setGridSize( newSize  );
-    scribbleArea->clearImage();
 }
 void MainWindow::changeRadius( )
 {
@@ -181,10 +180,6 @@ void MainWindow::createActions()
     penWidthAct = new QAction(tr("Pen &Width..."), this);
     connect(penWidthAct, &QAction::triggered, this, &MainWindow::penWidth);
 
-    clearScreenAct = new QAction(tr("&Clear Screen"), this);
-    clearScreenAct->setShortcut(tr("Ctrl+L"));
-    connect(clearScreenAct, &QAction::triggered, scribbleArea, &ScribbleArea::clearImage);
-
     aboutAct = new QAction(tr("&About"), this);
     connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
 
@@ -249,7 +244,6 @@ void MainWindow::createMenus()
     optionMenu->addAction(changeRadiusAct);
     optionMenu->addAction(stateColorAct);
     optionMenu->addSeparator();
-    optionMenu->addAction(clearScreenAct);
 
     /* Create help menu */
     helpMenu = new QMenu(tr("&Help"), this);
