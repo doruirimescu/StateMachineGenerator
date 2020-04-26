@@ -188,7 +188,7 @@ void View::drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter)
     brush.setColor(Qt::black);
     brush.setStyle(Qt::SolidPattern);
     path.addPolygon(poly);
-
+    painter->setRenderHint(QPainter::Antialiasing);
     painter->drawPolygon(poly);
     painter->fillPath(path, brush);
 }
