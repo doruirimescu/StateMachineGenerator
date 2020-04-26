@@ -9,6 +9,7 @@ void View::drawLine(const QPoint &start, const QPoint &end)
     painter.setPen(QPen(QColor(0xE0E0E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(start, end);
+    painter.end();
 }
 
 void View::drawAction(const Action *const a)
@@ -45,7 +46,9 @@ void View::drawActionText(const Action *const a)
     brush.setColor( QColor( Qt::white) );
     painter.fillRect(r, brush);
     painter.drawRect(r);
+    painter.setRenderHint(QPainter::TextAntialiasing);
     painter.drawStaticText(textX - rect.width()/2, textY, QStaticText( a->getLabel() ) ) ;
+    painter.end();
 }
 void View::drawAnchor(const QPoint &endPoint)
 {/* Draw anchor point where an action could join */
@@ -61,6 +64,7 @@ void View::drawAnchor(const QPoint &endPoint)
     painter.drawEllipse(endPoint, 5, 5 );
     painter.end();
 }
+
 void View::drawPossibleAnchor(const QPoint &endPoint)
 {/* Draw a possible anchor point where an action could join */
     QPainter painter(&image);
@@ -115,6 +119,7 @@ void View::drawActionLineDev(const Action *const a)
             drawArrow( lastSplit.x(), endP.y() - arrowLength * dirY, endP.x(), endP.y(), arrowWidth, &painter );
         }
     }
+    painter.end();
 }
 void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
 {
@@ -155,6 +160,7 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
         int dirY = Maths::sign( end.y() - start.y() );
         drawArrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &painter );
     }
+    painter.end();
 }
 void View::drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter)
 {
