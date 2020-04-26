@@ -53,7 +53,7 @@ void MainWindow::penColor()
     c->setStandardColor(0,0xE0E0E0);//To add some nice colors
     c->setStandardColor(1,0xF5F5F5);
 
-    QColor newColor = c->getColor(scribbleArea->getPenColor(),this,"Title",QColorDialog::DontUseNativeDialog);
+    QColor newColor = c->getColor(scribbleArea->getPenColor(),this,"Title");
 
     if (newColor.isValid())
         scribbleArea->setPenColor(newColor);
@@ -62,7 +62,8 @@ void MainWindow::penColor()
 
 void MainWindow::stateColor()
 {
-    QColor newColor = QColorDialog::getColor(scribbleArea->getPenColor());
+    QColorDialog *c = new QColorDialog(this);
+    QColor newColor = c->getColor(scribbleArea->getPenColor(),this, "Choose state color");
     if (newColor.isValid())
         scribbleArea->setStateColor(newColor);
 }
