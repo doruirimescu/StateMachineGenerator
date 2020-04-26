@@ -72,7 +72,6 @@ public:
 
     State *movingState;
 public slots:
-    void clearImage();
     void print();
 
 protected:

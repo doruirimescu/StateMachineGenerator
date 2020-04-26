@@ -25,11 +25,6 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     m = new Manager();
 }
 
-void ScribbleArea::clearImage()
-{
-    image.fill(qRgb(255, 255, 255));
-}
-
 void ScribbleArea::clearStates()
 {/* Clear all states */
     m->states.clear();
@@ -133,27 +128,10 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
     drawGrid();
 }
 
-void ScribbleArea::drawStates()
-{/* Draw all the states */
-    for( const auto & s : m->states )
-    {
-        view->drawState(s);
-    }
-}
 
-void ScribbleArea::drawActions()
-{/* Draw all the actions */
-    for( const auto & a: m->actions )
-    {
-        if( !mState )
-        {
-            view->drawAction(a);
-        }
-    }
-}
 void ScribbleArea::drawGrid()
 {
-    clearImage();
+    view->clearImage();
     /* Every mouse update, redraw the whole thing */
     for( int x = 0; x < width(); x += view->getGridSize() )
     {/* Draw horizontal lines */
@@ -165,11 +143,11 @@ void ScribbleArea::drawGrid()
         view->drawLine( QPoint(0,y), QPoint(width(),y) );
     }
 
-    drawStates();
+    view->drawStates(m->states);
 
     if( !mState )
     {
-        drawActions();
+        view->drawActions(m->actions);
     }
     update();
 }
