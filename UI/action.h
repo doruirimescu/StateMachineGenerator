@@ -51,16 +51,7 @@ public:
 
     bool hasAnchorAt(const QPoint &p)const;
 
-    bool operator <(const Action &a2)const
-    {
-        qreal distance1 = sqrt( pow( getStart()->getPos().x() - getEnd()->getPos().x(), 2 ) +
-                                pow( getStart()->getPos().y() - getEnd()->getPos().y(), 2 ) );
-
-        qreal distance2 = sqrt( pow( a2.getStart()->getPos().x() - a2.getEnd()->getPos().x(), 2 ) +
-                                pow( a2.getStart()->getPos().y() - a2.getEnd()->getPos().y(), 2 ) );
-        return distance1 < distance2;
-    }
-
+    long getDistance()const;
 private:
     QString label;
     State* start;
@@ -70,6 +61,7 @@ private:
     QVector <QPoint> splits;
     QString startAnchor;//R/L/U/D
     QString endAnchor;  //R/L/U/D
+
 };
 
 #endif // ACTION_H
