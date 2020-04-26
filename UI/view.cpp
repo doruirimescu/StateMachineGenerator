@@ -5,6 +5,7 @@
 void View::drawLine(const QPoint &start, const QPoint &end)
 {
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(QColor(0xE0E0E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(start, end);
@@ -25,6 +26,7 @@ void View::drawAction(const Action *const a)
 void View::drawActionText(const Action *const a)
 {
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(QColor(0x1000E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     QVector<QPoint>::const_iterator begin;
@@ -48,6 +50,7 @@ void View::drawActionText(const Action *const a)
 void View::drawAnchor(const QPoint &endPoint)
 {/* Draw anchor point where an action could join */
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     /*Remove previous point*/
     painter.setBrush( ( QColor(Qt::white) ) );
     painter.drawEllipse(endPoint, 5, 5 );
@@ -61,6 +64,7 @@ void View::drawAnchor(const QPoint &endPoint)
 void View::drawPossibleAnchor(const QPoint &endPoint)
 {/* Draw a possible anchor point where an action could join */
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     /*Remove previous point*/
     painter.setBrush( ( QColor(Qt::white) ) );
     painter.drawEllipse(endPoint, 6, 6 );
@@ -85,6 +89,7 @@ void View::drawActionLineDev(const Action *const a)
     const QPoint sLastSplit = *(end-3);//second last split
 
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     /* Draw the line with all the splits */
@@ -118,6 +123,7 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
      * The endpoint contains an arrow.
      */
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
 
@@ -183,6 +189,7 @@ void View::drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter)
 void View::drawState(const State *s)
 {
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     /* Get state original pen */
     painter.setPen( s->getPen() );
     painter.setBrush( s->getCol() );
@@ -201,6 +208,7 @@ void View::drawCircleTo(const QPoint &endPoint)
 {/* Draw current ellipse */
 
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     /* Clear gridline where new circle is drawn */
     painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
     painter.setBrush( QColor(0xffffff) );
@@ -218,6 +226,7 @@ void View::drawInvalidCircleTo(const QPoint &endPoint)
 {/* Draw current ellipse */
 
     QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
     /* Clear gridline where new circle is drawn */
     painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
     painter.setBrush( QColor(0xffffff) );
