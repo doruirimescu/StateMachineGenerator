@@ -5,16 +5,16 @@
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
 {/* When user clicks */
 
+    QApplication::restoreOverrideCursor();
     if( event->button() != Qt::LeftButton )
     {/* Exit early if left mouse wasn't clicked */
         return;
     }
 
-    /* Update the current point location */
-    currentPoint.setX(Maths::roundToGrid( event->pos().x(), view->getGridSize() ));
-    currentPoint.setY(Maths::roundToGrid( event->pos().y(), view->getGridSize() ));
+    /* If no state is moving, movingState is nullptr */
+    bool intersectState = m->intersectState( currentPoint, movingState, getGridSize() );
 
-    if( pState && !m->intersectState( currentPoint, getGridSize() ) )
+    if( pState && intersectState == false )
     {/* State placement is done, and we are not intersecting another state */
 
         QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label");
@@ -26,16 +26,18 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         }
         pState = false;
     }
-    else if( mState && !m->intersectState(currentPoint, movingState, getGridSize()) )
+    else if( mState && intersectState == false )
     {
         mState = false;
+        m->updateActionStartEnd(movingState);
+        movingState = nullptr;
         m->Astar( getGridSize(), width(), height() );
     }
     else if( eState )
     {/* State editing is opened */
 
         /* Try to find state at clicked position */
-        State *s = m->searchState(event->pos());
+        State *s = m->searchState( event->pos() );
 
         if( s != nullptr )
         {/* If clicking inside a valid state */
@@ -116,6 +118,10 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                 lastAct->setEnd(actionEnd);
                 lastAct->setEndPoint(&actionEndPoint);
                 lastAct->setEndAnchor(actionEndAnchor);
+
+                /* Update state-actions hash map */
+                m->mapStateToActions();
+
                 pActionStart = false;
                 pAction = false;
             }
@@ -129,24 +135,23 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 {/* When user is moving the mouse */
 
-    int x, y;
-    x = Maths::roundToGrid( event->pos().x(), view->getGridSize() );
-    y = Maths::roundToGrid( event->pos().y(), view->getGridSize() );
-    QPoint currentPoint = QPoint(x,y);
+    updateCurrentPoint( Maths::roundToGrid( event->pos().x(), view->getGridSize() ),
+                        Maths::roundToGrid( event->pos().y(), view->getGridSize() )
+                        );
+
     drawGrid();
-    if( pState && m->intersectState(currentPoint, getGridSize() ) )
+    bool intersectState = m->intersectState(currentPoint, movingState, getGridSize() );
+
+    if( pState && intersectState == true )
     {/* Placing a state, but intersecting another one */
         view->drawInvalidCircleTo(currentPoint);
     }
     else if( pState )
-    {/* If moving mouse while placing state, and not placing state on top of another */
-
-        /* Draw at potentially new position */
+    {/* If moving mouse while placing state */
         view->drawCircleTo(currentPoint);
     }
-    else if (mState && !m->intersectState(currentPoint, movingState, getGridSize() ) )
+    else if ( mState && intersectState == false )
     {/* If moving a state */
-
         movingState->setPos(currentPoint);
         movingState->bonundToDrawingArea(width(),height(),getGridSize());
     }
@@ -157,7 +162,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     }
     else if( pAction )
     {/* If placing action */
-
         QString anchorInfo;
         QPoint possibleAnchorPoint = m->onStateBorder( currentPoint, anchorInfo );
         if( possibleAnchorPoint != invalidPoint )
@@ -190,5 +194,4 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
             view->drawPossibleActionLine(actionStartPoint, currentPoint);
         }
     }
-    update();
 }
