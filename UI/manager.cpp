@@ -68,26 +68,9 @@ State * Manager::searchState(QPoint pos)
     }
     return nullptr;
 }
-bool Manager::intersectState(QPoint pos, int gridSize )
-{/* Check if specified position intersects any state */
-    int r, x, y;
-    for( const auto & i : states )
-    {/* Check all the states */
-        r = i->getRad();
-        x = i->getPos().x();
-        y = i->getPos().y();
 
-        qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
-        if( dist < 2 * ( r + gridSize ) )
-        {
-            qInfo()<< "Intersect state ";
-            return true;
-        }
-    }
-    return false;
-}
 bool Manager::intersectState(QPoint pos, State * s, int gridSize)
-{/* Check if specified position itnersects any state besides s*/
+{/* Check if specified position intersects any state besides s*/
     int r, x, y;
     for( const auto & i : states )
     {/* Check all the states */
@@ -155,6 +138,47 @@ QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
 void Manager::addAction(Action *a)
 {
     actions.append(a);
+}
+
+/* Maps starting state and ending state to corresponding actions */
+void Manager::mapStateToActions()
+{
+    Action *a = actions.back();
+
+    if( stateActionStartMap.find(a->getStart()) == stateActionStartMap.end() )
+    {/* Mapping does not exist. Create it. */
+        stateActionStartMap.insert( a->getStart(), {a} );
+    }
+    else
+    {
+        stateActionStartMap[ a->getStart() ].push_back(a);
+    }
+
+    if( stateActionEndMap.find( a->getEnd()) == stateActionEndMap.end() )
+    {/* Mapping does not exist. Create it. */
+        stateActionEndMap.insert( a->getEnd(), {a} );
+        qInfo()<<(a->getEnd()->getLabel());
+    }
+    else
+    {
+        stateActionEndMap[ a->getEnd() ].push_back(a);
+    }
+}
+
+/* Updates startpoint and endpoint of actions related to state s */
+void Manager::updateActionStartEnd(State *s)
+{
+    for( auto act : stateActionStartMap[s] )
+    {
+        act->replaceStart();
+    }
+    for( auto act: stateActionEndMap[s] )
+    {
+        if( act->getEndPoint() != invalidPoint )
+        {
+            act->replaceEnd();
+        }
+    }
 }
 Action* Manager::getLastAction()
 {
