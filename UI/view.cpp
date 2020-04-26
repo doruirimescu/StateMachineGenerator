@@ -11,7 +11,13 @@ void View::drawLine(const QPoint &start, const QPoint &end)
     painter.drawLine(start, end);
     painter.end();
 }
-
+void View::drawActions(const QVector<Action *> &actions)
+{
+    for( const auto & a: actions )
+    {
+        drawAction(a);
+    }
+}
 void View::drawAction(const Action *const a)
 {/* Draw a full action that has been completed */
     drawAnchor(a->getEndPoint());
@@ -209,7 +215,13 @@ void View::drawState(const State *s)
     painter.drawStaticText( s->getPos().x() - rect.width() / 2, s->getPos().y() - rect.height() / 2, QStaticText( text ) ) ;
     painter.end();
 }
-
+void View::drawStates(const QVector<State *> &states)
+{
+    for( const auto & s : states )
+    {
+        drawState(s);
+    }
+}
 void View::drawCircleTo(const QPoint &endPoint)
 {/* Draw current ellipse */
 

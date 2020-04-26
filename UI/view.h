@@ -22,10 +22,12 @@ public slots:
 public:
     View(QImage &img): image(img) {};
 
+    void clearImage(){ image.fill(qRgb(255, 255, 255)); };
     /* State-related drawing */
     void drawState(const State *s);
     void drawCircleTo(const QPoint &endPoint);
     void drawInvalidCircleTo(const QPoint &endPoint);
+    void drawStates(const QVector<State*> &states);
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
@@ -35,6 +37,7 @@ public:
     void drawAction(const Action *const a);
     void drawActionText(const Action *const a);
     void drawActionLineDev(const Action *const a);//in development
+    void drawActions(const QVector<Action*> &actions);
 
     /* Line used for grids */
     void drawLine(const QPoint &start, const QPoint &end);
