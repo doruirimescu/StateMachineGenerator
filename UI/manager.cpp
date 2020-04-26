@@ -168,13 +168,13 @@ void Manager::updateActionStartEnd(State *s)
 {
     for( auto act : stateActionStartMap[s] )
     {
-        act->replaceStart();
+        act->replaceStartPoint();
     }
     for( auto act: stateActionEndMap[s] )
     {
         if( act->getEndPoint() != invalidPoint )
         {
-            act->replaceEnd();
+            act->replaceEndPoint();
         }
     }
 }

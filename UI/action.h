@@ -32,8 +32,8 @@ public:
     void setEndAnchor(QString s){ endAnchor = s; };
 
     /* start replaced, end replaced*/
-    void replaceStart();
-    void replaceEnd();
+    void replaceStartPoint();
+    void replaceEndPoint();
 
     /* Action label setter-getter */
     void setLabel(QString l){ label = l; };

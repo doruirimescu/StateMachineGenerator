@@ -10,7 +10,7 @@ long Action::getDistance()const
     return pow( getStartPoint().x() - getEndPoint().x(), 2 ) +
            pow( getStartPoint().y() - getEndPoint().y(), 2 );
 }
-void Action::replaceStart()
+void Action::replaceStartPoint()
 {/* Action start state position has been replaced */
     if( splits.size() > 2 )
     {
@@ -37,7 +37,7 @@ void Action::replaceStart()
         }
     }
 }
-void Action::replaceEnd()
+void Action::replaceEndPoint()
 {
     if( splits.size() > 2 )
     {
