@@ -186,33 +186,33 @@ void Manager::Astar(int gridSize, int width, int height)
      */
     for( const auto &s : states )
     {
-        QPoint center = s->getPos();
-        int rad = s->getRad();
+        QPoint center = QPoint( s->getPos().x() / gridSize, s->getPos().y() / gridSize );
+        int rad = s->getRad() / gridSize;
 
-        for(int x = center.x() - rad; x <= center.x() + rad; x += gridSize )
+        for(int  x =  center.x() - rad; x <= center.x() + rad; x += 1 )
         {
             if( x!= center.x() )
             {
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad) / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad) / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x, (center.y() + rad) ) );
+                MAPPGridState::walls.push_back( Wall( x, (center.y() - rad) ) );
             }
             else
             {
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad - gridSize)/ gridSize ) );
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad + gridSize)/ gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x, center.y() + rad - 1 ) );
+                MAPPGridState::walls.push_back( Wall( x, center.y() - rad + 1 ) );
             }
         }
-        for( int y = center.y() - rad; y <= center.y() + rad; y += gridSize )
+        for( int y = center.y() - rad; y <= center.y() + rad; y += 1 )
         {
             if( y != center.y() )
             {
-                MAPPGridState::walls.push_back( Wall( ( center.x() + rad ) / gridSize, y / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( ( center.x() - rad ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( center.x() + rad, y ) );
+                MAPPGridState::walls.push_back( Wall( center.x() - rad, y ) );
             }
             else
             {
-                MAPPGridState::walls.push_back( Wall( ( center.x() + rad - gridSize ) / gridSize, y / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( ( center.x() - rad + gridSize ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( center.x() + rad - 1, y ) );
+                MAPPGridState::walls.push_back( Wall( center.x() - rad + 1, y ) );
             }
         }
     }
@@ -246,7 +246,6 @@ void Manager::Astar(int gridSize, int width, int height)
         {
             /* There was no good result */
             a->clearSplits();
-
             a->addSplit(a->getStartPoint());
             int splitPoint = Maths::roundToGrid( a->getStartPoint().x() + ( a->getEndPoint().x() - a->getStartPoint().x() ) / 2, gridSize );
             a->addSplit( QPoint ( splitPoint, a->getStartPoint().y() ) );
