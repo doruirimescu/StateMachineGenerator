@@ -1,7 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 #include "state.h"
-
+#include "math.h"
 class Action
 {
 public:
@@ -50,6 +50,16 @@ public:
     uint getSplitsSize()const{ return splits.size(); };
 
     bool hasAnchorAt(const QPoint &p)const;
+
+    bool operator <(const Action &a2)const
+    {
+        qreal distance1 = sqrt( pow( getStart()->getPos().x() - getEnd()->getPos().x(), 2 ) +
+                                pow( getStart()->getPos().y() - getEnd()->getPos().y(), 2 ) );
+
+        qreal distance2 = sqrt( pow( a2.getStart()->getPos().x() - a2.getEnd()->getPos().x(), 2 ) +
+                                pow( a2.getStart()->getPos().y() - a2.getEnd()->getPos().y(), 2 ) );
+        return distance1 < distance2;
+    }
 
 private:
     QString label;
