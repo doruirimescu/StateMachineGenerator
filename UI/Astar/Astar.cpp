@@ -21,7 +21,7 @@ vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
         while( !Q.empty() && going )
         {
             ctr ++;
-            if( ctr > 50000 )
+            if( ctr > 10000 )
             {   OUTPUT<<"STUCK";
                 return {grid};
             }
