@@ -242,9 +242,10 @@ void Manager::Astar(int gridSize, int width, int height)
     /*
      * Go through each action, solve A*, add walls
      */
-    std::sort(actions.begin(), actions.end());
+
+    std::sort(actions.begin(), actions.end(), [](Action *a, Action *b){ return a->getDistance() < b->getDistance(); } );
     for( auto &a : actions )
-    {   qInfo()<<a->getLabel();
+    {
         vector<Agent> agents;
         unsigned int sX = a->getStartPoint().x() / gridSize;
         unsigned int sY = a->getStartPoint().y() / gridSize;
