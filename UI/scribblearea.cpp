@@ -20,6 +20,7 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     actionEndPoint   = invalidPoint;
     pActionStart     = false;
 
+    movingState = nullptr;
     /* Create a manager */
     m = new Manager();
 }

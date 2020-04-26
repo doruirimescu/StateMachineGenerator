@@ -26,6 +26,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
     else if( mState && !m->intersectState(currentPoint, movingState, getGridSize()) )
     {
         mState = false;
+        movingState = nullptr;
         m->Astar( getGridSize(), width(), height() );
     }
     else if( eState )
