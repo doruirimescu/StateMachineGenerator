@@ -147,8 +147,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
         view->drawInvalidCircleTo(currentPoint);
     }
     else if( pState )
-    {/* If moving mouse while placing state, and not placing state on top of another */
-        /* Draw at potentially new position */
+    {/* If moving mouse while placing state */
         view->drawCircleTo(currentPoint);
     }
     else if ( mState && intersectState == false )
@@ -195,5 +194,4 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
             view->drawPossibleActionLine(actionStartPoint, currentPoint);
         }
     }
-    update();
 }
