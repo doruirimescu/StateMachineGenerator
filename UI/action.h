@@ -6,18 +6,18 @@ class Action
 {
 public:
     /* Constructor-destructor */
-    Action( QString label, State* s, State* e, QPoint sP, QPoint eP ) : label(label), start(s), end(e), startPos(sP), endPos(eP){};
-    ~Action(){qInfo()<<"Action from state: "<<this->start->getLabel()<<" to state: "<<this->end->getLabel()<<"DEAD";}
+    Action( QString label, State* s, State* e, QPoint sP, QPoint eP ) : label(label), startState(s), endState(e), startPos(sP), endPos(eP){};
+    ~Action(){qInfo()<<"Action from state: "<<this->startState->getLabel()<<" to state: "<<this->endState->getLabel()<<"DEAD";}
 
     void print();
 
     /* Start state setter-getter */
-    void setStart(State* const &s){ start = s; };
-    State* getStart() const { return start; };
+    void setStart(State* const &s){ startState = s; };
+    State* getStart() const { return startState; };
 
     /* End state setter-getter */
-    void setEnd(State* const &e){ end = e; };
-    State* getEnd() const { return end; };
+    void setEnd(State* const &e){ endState = e; };
+    State* getEnd() const { return endState; };
 
     /* Start anchor position setter-getter */
     void setStartPoint(const QPoint* s){ startPos = *s; };
@@ -54,8 +54,8 @@ public:
     long getDistance()const;
 private:
     QString label;
-    State* start;
-    State* end;
+    State* startState;
+    State* endState;
     QPoint startPos;
     QPoint endPos;
     QVector <QPoint> splits;

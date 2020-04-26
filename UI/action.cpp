@@ -2,7 +2,7 @@
 
 void Action::print()
 {
-    qInfo()<<"Action from state: "<<this->start->getLabel()<<" to state: "<<this->end->getLabel();
+    qInfo()<<"Action from state: "<<this->startState->getLabel()<<" to state: "<<this->endState->getLabel();
     qInfo()<<"Label: "<<label;
 }
 long Action::getDistance()const
@@ -14,25 +14,25 @@ void Action::replaceStart()
 {/* Action start state position has been replaced */
     if( splits.size() > 2 )
     {
-        QPoint newPos = start->getPos();
+        QPoint newPos = startState->getPos();
         if( startAnchor.compare("R") == 0)
         {
-            startPos = newPos + QPoint( start->getRad(), 0 );
+            startPos = newPos + QPoint( startState->getRad(), 0 );
             splits.replace(0, startPos);
         }
         else if( startAnchor.compare("L") == 0 )
         {
-            startPos = newPos - QPoint( start->getRad(), 0 );
+            startPos = newPos - QPoint( startState->getRad(), 0 );
             splits.replace(0, startPos);
         }
         else if( startAnchor.compare("U") == 0 )
         {
-            startPos = newPos - QPoint( 0, start->getRad() );
+            startPos = newPos - QPoint( 0, startState->getRad() );
             splits.replace(0, startPos);
         }
         else if( startAnchor.compare("D") == 0 )
         {
-            startPos = newPos + QPoint( 0, start->getRad() );
+            startPos = newPos + QPoint( 0, startState->getRad() );
             splits.replace(0, startPos);
         }
     }
@@ -41,25 +41,25 @@ void Action::replaceEnd()
 {
     if( splits.size() > 2 )
     {
-        QPoint newPos = end->getPos();
+        QPoint newPos = endState->getPos();
         if( endAnchor.compare("R") == 0)
         {
-            endPos = newPos + QPoint( end->getRad(), 0 );
+            endPos = newPos + QPoint( endState->getRad(), 0 );
             splits.replace(splits.size() - 1, endPos);
         }
         else if( endAnchor.compare("L") == 0 )
         {
-            endPos = newPos - QPoint( end->getRad(), 0 );
+            endPos = newPos - QPoint( endState->getRad(), 0 );
             splits.replace(splits.size() - 1, endPos);
         }
         else if( endAnchor.compare("U") == 0 )
         {
-            endPos = newPos - QPoint( 0, end->getRad() );
+            endPos = newPos - QPoint( 0, endState->getRad() );
             splits.replace(splits.size() - 1, endPos);
         }
         else if( endAnchor.compare("D") == 0 )
         {
-            endPos = newPos + QPoint( 0, end->getRad() );
+            endPos = newPos + QPoint( 0, endState->getRad() );
             splits.replace(splits.size() - 1, endPos);
         }
     }
