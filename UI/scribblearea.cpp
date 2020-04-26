@@ -104,6 +104,7 @@ void ScribbleArea::generateCode()
 void ScribbleArea::rearrangeActions()
 {
     m->Astar( getGridSize(), width(), height() );
+    drawGrid();
 }
 
 void ScribbleArea::paintEvent(QPaintEvent *event)
@@ -132,6 +133,24 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
     drawGrid();
 }
 
+void ScribbleArea::drawStates()
+{/* Draw all the states */
+    for( const auto & s : m->states )
+    {
+        view->drawState(s);
+    }
+}
+
+void ScribbleArea::drawActions()
+{/* Draw all the actions */
+    for( const auto & a: m->actions )
+    {
+        if( !mState )
+        {
+            view->drawAction(a);
+        }
+    }
+}
 void ScribbleArea::drawGrid()
 {
     clearImage();
@@ -140,37 +159,17 @@ void ScribbleArea::drawGrid()
     {/* Draw horizontal lines */
         view->drawLine( QPoint(x,0), QPoint(x,height()) );
     }
+
     for( int y = 0; y < height(); y += view->getGridSize() )
     {/* Draw vertical lines */
         view->drawLine( QPoint(0,y), QPoint(width(),y) );
     }
 
-    /* Draw all the states */
-    for( const auto & s : m->states )
-    {
-        view->drawState(s);
-    }
+    drawStates();
 
-    /* Draw all the actions */
-    for( const auto & a: m->actions )
+    if( !mState )
     {
-        if( a->getEndPoint() == invalidPoint && !pActionStart )
-        {/* Action not finished, only draw anchor */
-            view->drawAnchor( a->getStartPoint() );
-        }
-        else if( mState )
-        {
-            /* In case a state is moved */
-            a->replaceStart();
-            if( a->getEndPoint() != invalidPoint )
-            {
-                a->replaceEnd();
-            }
-        }
-        else
-        {
-            view->drawAction(a);
-        }
+        drawActions();
     }
     update();
 }
