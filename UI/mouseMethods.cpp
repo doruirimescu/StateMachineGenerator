@@ -5,6 +5,7 @@
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
 {/* When user clicks */
 
+    QApplication::restoreOverrideCursor();
     if( event->button() != Qt::LeftButton )
     {/* Exit early if left mouse wasn't clicked */
         return;
@@ -140,13 +141,11 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     }
     else if( pState )
     {/* If moving mouse while placing state, and not placing state on top of another */
-
         /* Draw at potentially new position */
         view->drawCircleTo(currentPoint);
     }
-    else if (mState && !m->intersectState(currentPoint, movingState, getGridSize() ) )
+    else if ( mState && !m->intersectState(currentPoint, movingState, getGridSize() ) )
     {/* If moving a state */
-
         movingState->setPos(currentPoint);
         movingState->bonundToDrawingArea(width(),height(),getGridSize());
     }
@@ -157,7 +156,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     }
     else if( pAction )
     {/* If placing action */
-
         QString anchorInfo;
         QPoint possibleAnchorPoint = m->onStateBorder( currentPoint, anchorInfo );
         if( possibleAnchorPoint != invalidPoint )
