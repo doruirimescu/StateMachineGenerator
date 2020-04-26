@@ -1,7 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 #include "state.h"
-
+#include "math.h"
 class Action
 {
 public:
@@ -51,6 +51,7 @@ public:
 
     bool hasAnchorAt(const QPoint &p)const;
 
+    long getDistance()const;
 private:
     QString label;
     State* start;
@@ -60,6 +61,7 @@ private:
     QVector <QPoint> splits;
     QString startAnchor;//R/L/U/D
     QString endAnchor;  //R/L/U/D
+
 };
 
 #endif // ACTION_H

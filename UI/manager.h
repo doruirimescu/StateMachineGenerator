@@ -4,6 +4,7 @@
 #include <state.h>
 #include <action.h>
 #include <QMap>
+#include <QHash>
 #include "maths.h"
 #include "Astar/porting.hpp"
 #include "Astar/Agent.hpp"
@@ -20,7 +21,6 @@ public:
     void addState( State * s );
     void deleteState( State * s );
     State * searchState( QPoint pos );
-    bool intersectState( QPoint pos, int gridSize );
     bool intersectState( QPoint pos, State *s, int gridSize );
     QPoint onStateBorder( QPoint pos, QString & posInfo );
     void printStates();
@@ -32,6 +32,13 @@ public:
     Action* getLastAction();
     void deleteAction( Action *a );
     void Astar(int gridSize, int width, int height);
+
+    void mapStateToActions();
+
+    void updateActionStartEnd(State* s);
+private:
+    QHash<State*, vector<Action*> > stateActionStartMap;
+    QHash<State*, vector<Action*> > stateActionEndMap;
 };
 
 #endif // MANAGER_H

@@ -82,12 +82,16 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    AUTO_PROPERTY(QString, myProperty);
 
     void resizeImage(QImage *image, const QSize &newSize);
+
     void drawGrid();
+    void drawActions();
+    void drawStates();
+
     void clearStates();
     void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
+    void updateCurrentPoint(int x, int y) { currentPoint = QPoint(x, y); };
 
     bool modified = false;
     bool scribbling = false;

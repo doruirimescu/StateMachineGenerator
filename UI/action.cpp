@@ -5,7 +5,11 @@ void Action::print()
     qInfo()<<"Action from state: "<<this->start->getLabel()<<" to state: "<<this->end->getLabel();
     qInfo()<<"Label: "<<label;
 }
-
+long Action::getDistance()const
+{
+    return pow( getStartPoint().x() - getEndPoint().x(), 2 ) +
+           pow( getStartPoint().y() - getEndPoint().y(), 2 );
+}
 void Action::replaceStart()
 {/* Action start state position has been replaced */
     if( splits.size() > 2 )

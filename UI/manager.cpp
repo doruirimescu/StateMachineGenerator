@@ -68,35 +68,18 @@ State * Manager::searchState(QPoint pos)
     }
     return nullptr;
 }
-bool Manager::intersectState(QPoint pos, int gridSize )
-{
-    int r,x,y;
-    for( const auto & i : states )
-    {/* Check all the states */
-        r = i->getRad();
-        x = i->getPos().x();
-        y = i->getPos().y();
 
-        if( qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
-        {
-            qInfo()<< "Intersect state ";
-            return true;
-        }
-    }
-    return false;
-}
 bool Manager::intersectState(QPoint pos, State * s, int gridSize)
-{
-    int r,x,y;
+{/* Check if specified position intersects any state besides s*/
+    int r, x, y;
     for( const auto & i : states )
     {/* Check all the states */
         r = i->getRad();
         x = i->getPos().x();
         y = i->getPos().y();
-
-        if( i != s && qFabs( pos.x() - x ) < 2 * ( r + gridSize ) && qFabs( pos.y() - y ) < 2 * ( r + gridSize ) )
+        qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
+        if( i != s && dist < 2 * ( r + gridSize ) )
         {
-            qInfo()<< "Intersect state ";
             return true;
         }
     }
@@ -155,6 +138,46 @@ void Manager::addAction(Action *a)
 {
     actions.append(a);
 }
+
+/* Maps starting state and ending state to corresponding actions */
+void Manager::mapStateToActions()
+{
+    Action *a = actions.back();
+
+    if( stateActionStartMap.find(a->getStart()) == stateActionStartMap.end() )
+    {/* Mapping does not exist. Create it. */
+        stateActionStartMap.insert( a->getStart(), {a} );
+    }
+    else
+    {
+        stateActionStartMap[ a->getStart() ].push_back(a);
+    }
+
+    if( stateActionEndMap.find( a->getEnd()) == stateActionEndMap.end() )
+    {/* Mapping does not exist. Create it. */
+        stateActionEndMap.insert( a->getEnd(), {a} );
+    }
+    else
+    {
+        stateActionEndMap[ a->getEnd() ].push_back(a);
+    }
+}
+
+/* Updates startpoint and endpoint of actions related to state s */
+void Manager::updateActionStartEnd(State *s)
+{
+    for( auto act : stateActionStartMap[s] )
+    {
+        act->replaceStart();
+    }
+    for( auto act: stateActionEndMap[s] )
+    {
+        if( act->getEndPoint() != invalidPoint )
+        {
+            act->replaceEnd();
+        }
+    }
+}
 Action* Manager::getLastAction()
 {
     return actions.back();
@@ -186,39 +209,41 @@ void Manager::Astar(int gridSize, int width, int height)
      */
     for( const auto &s : states )
     {
-        QPoint center = s->getPos();
-        int rad = s->getRad();
+        QPoint center = QPoint( s->getPos().x() / gridSize, s->getPos().y() / gridSize );
+        int rad = s->getRad() / gridSize;
 
-        for(int x = center.x() - rad; x <= center.x() + rad; x += gridSize )
+        for(int  x =  center.x() - rad; x <= center.x() + rad; x += 1 )
         {
             if( x!= center.x() )
             {
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad) / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad) / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x, (center.y() + rad) ) );
+                MAPPGridState::walls.push_back( Wall( x, (center.y() - rad) ) );
             }
             else
             {
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() + rad - gridSize)/ gridSize ) );
-                MAPPGridState::walls.push_back( Wall( x / gridSize, (center.y() - rad + gridSize)/ gridSize ) );
+                MAPPGridState::walls.push_back( Wall( x, center.y() + rad - 1 ) );
+                MAPPGridState::walls.push_back( Wall( x, center.y() - rad + 1 ) );
             }
         }
-        for( int y = center.y() - rad; y <= center.y() + rad; y += gridSize )
+        for( int y = center.y() - rad; y <= center.y() + rad; y += 1 )
         {
             if( y != center.y() )
             {
-                MAPPGridState::walls.push_back( Wall( ( center.x() + rad ) / gridSize, y / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( ( center.x() - rad ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( center.x() + rad, y ) );
+                MAPPGridState::walls.push_back( Wall( center.x() - rad, y ) );
             }
             else
             {
-                MAPPGridState::walls.push_back( Wall( ( center.x() + rad - gridSize ) / gridSize, y / gridSize ) );
-                MAPPGridState::walls.push_back( Wall( ( center.x() - rad + gridSize ) / gridSize, y / gridSize ) );
+                MAPPGridState::walls.push_back( Wall( center.x() + rad - 1, y ) );
+                MAPPGridState::walls.push_back( Wall( center.x() - rad + 1, y ) );
             }
         }
     }
     /*
      * Go through each action, solve A*, add walls
      */
+
+    std::sort(actions.begin(), actions.end(), [](Action *a, Action *b){ return a->getDistance() < b->getDistance(); } );
     for( auto &a : actions )
     {
         vector<Agent> agents;
@@ -246,7 +271,6 @@ void Manager::Astar(int gridSize, int width, int height)
         {
             /* There was no good result */
             a->clearSplits();
-
             a->addSplit(a->getStartPoint());
             int splitPoint = Maths::roundToGrid( a->getStartPoint().x() + ( a->getEndPoint().x() - a->getStartPoint().x() ) / 2, gridSize );
             a->addSplit( QPoint ( splitPoint, a->getStartPoint().y() ) );
