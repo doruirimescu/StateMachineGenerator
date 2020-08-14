@@ -45,7 +45,7 @@ public:
     QColor getStateColor() const{ return view->getStateColor();}
 
     /* Pen width setter-getter */
-    void setPenWidth(int newWidth) const {view->setPenWidth(newWidth);};
+    void setPenWidth(int newWidth) const {view->setPenWidth(newWidth);}
     int getPenWidth() const { return view->getPenWidth(); }
 
     /* Called for code generation */
@@ -69,8 +69,8 @@ public:
     QPoint actionEndPoint;
     QString actionStartAnchor;
     QString actionEndAnchor;
-
     State *movingState;
+
 public slots:
     void print();
 
@@ -81,16 +81,14 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-
     void resizeImage(QImage *image, const QSize &newSize);
-
     void drawGrid();
     void drawActions();
     void drawStates();
 
     void clearStates();
-    void drawArrow(int x0, int y0, int x, int y, int w, QPainter* painter);
     void updateCurrentPoint(int x, int y) { currentPoint = QPoint(x, y); };
+
 
     bool modified = false;
     bool scribbling = false;
