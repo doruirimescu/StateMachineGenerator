@@ -88,7 +88,7 @@ private:
 
     void clearStates();
     void updateCurrentPoint(int x, int y) { currentPoint = QPoint(x, y); };
-
+    void boundToDrawingArea();
 
     bool modified = false;
     bool scribbling = false;

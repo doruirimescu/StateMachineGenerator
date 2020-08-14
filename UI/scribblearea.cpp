@@ -152,6 +152,27 @@ void ScribbleArea::drawGrid()
     update();
 }
 
+void ScribbleArea::boundToDrawingArea()
+{
+    if( currentPoint.x() - getStateRadius() < getGridSize() )
+    {/* If the cursor is out of bounds, limit it inside drawing area*/
+        currentPoint.setX( getGridSize() + getStateRadius() );
+    }
+    if( currentPoint.y() - getStateRadius() < getGridSize() )
+    {/* If the cursor is out of bounds, limit it inside drawing area*/
+        currentPoint.setY( getGridSize() + getStateRadius() );
+    }
+
+    if( currentPoint.x() + getStateRadius() > width() - getGridSize() )
+    {/* If the cursor is out of bounds, limit it inside drawing area*/
+        currentPoint.setX( width() - getStateRadius() - getGridSize() );
+    }
+
+    if( currentPoint.y() + getStateRadius() > height() - getGridSize() )
+    {/* If the cursor is out of bounds, limit it inside drawing area*/
+        currentPoint.setY( height() - getStateRadius() - getGridSize() );
+    }
+}
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)
