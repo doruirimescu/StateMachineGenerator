@@ -141,6 +141,12 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
     /* First split happens horizontally */
     QPoint split1 = QPoint( start.x() + Maths::roundToGrid( ( end.x() - start.x() ) / 2, gridSize ), start.y() );
 
+    /* Handle exceptional case just as in ScribbleArea. */
+    if( qAbs(end.x() - start.x()) == gridSize )
+    {
+        split1 = start;
+    }
+
     /* Second split happens vertically */
     QPoint split2 = split1;
     split2.setY( end.y() );
@@ -170,6 +176,7 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
 }
 void View::drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter)
 {
+    /* Complicated calculations for drawing a simple arrow. */
     int dx, dy;
     double sina, cosa, l;
     l = qSqrt( (x - x0) * (x - x0)  + (y - y0) * (y - y0) );

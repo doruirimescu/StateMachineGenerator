@@ -92,7 +92,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
             m->getLastAction()->addSplit( actionStartPoint );
             m->getLastAction()->setStartAnchor(actionStartAnchor);
         }
-        else if( pActionStart == true )
+        else if( pActionStart == true && m->getLastAction()->getStartPoint() != currentPoint)
         {/* Action startpoint placement has finished */
 
             if( actionEndPoint != invalidPoint )
@@ -106,6 +106,11 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                                     actionStartPoint.y() );
 
             /* Second split happens vertically */
+            /* Handle exceptional case just as in view. */
+            if( qAbs(currentPoint.x() - actionStartPoint.x()) == view->getGridSize() )
+            {
+                split1 = actionStartPoint;
+            }
             split2 = split1;
             split2.setY( currentPoint.y() );
 
@@ -141,6 +146,10 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     updateCurrentPoint( Maths::roundToGrid( event->pos().x(), view->getGridSize() ),
                         Maths::roundToGrid( event->pos().y(), view->getGridSize() )
                         );
+    if( pState || mState )
+    {
+        boundToDrawingArea();
+    }
 
     drawGrid();
 
@@ -156,7 +165,6 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     else if ( mState && !m->intersectState(currentPoint, movingState, getGridSize() ) ) //check if intersecting with moving state
     {/* If moving a state */
         movingState->setPos(currentPoint);
-        movingState->boundToDrawingArea(width(),height(),getGridSize());
     }
     else if( mState )
     {/* Intersecting state */
