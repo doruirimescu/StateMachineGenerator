@@ -3,7 +3,7 @@ void State::print()
 {
     qInfo()<<" x: "<<pos.x()<<" y:"<<pos.y();
 }
-void State::bonundToDrawingArea( int width, int height, int gridSize)
+void State::boundToDrawingArea( int width, int height, int gridSize)
 {
     if( pos.x() - radius < gridSize )
     {/* If the cursor is out of bounds, limit it inside drawing area*/

@@ -145,9 +145,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     drawGrid();
 
     /* Does the current cursor point intersect other states besides the state which I'm placing ?*/
-    bool intersectState = m->intersectState(currentPoint, getStateRadius(), getGridSize() );
-
-    if( pState && intersectState == true )
+    if( pState && m->intersectState(currentPoint, getStateRadius(), getGridSize() ) )
     {/* Placing a state, but intersecting another one */
         view->drawInvalidCircleTo(currentPoint);
     }
@@ -155,10 +153,10 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     {/* If moving mouse while placing state */
         view->drawCircleTo(currentPoint);
     }
-    else if ( mState && intersectState == false )
+    else if ( mState && !m->intersectState(currentPoint, movingState, getGridSize() ) ) //check if intersecting with moving state
     {/* If moving a state */
         movingState->setPos(currentPoint);
-        movingState->bonundToDrawingArea(width(),height(),getGridSize());
+        movingState->boundToDrawingArea(width(),height(),getGridSize());
     }
     else if( mState )
     {/* Intersecting state */
