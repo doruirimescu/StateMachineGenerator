@@ -69,16 +69,17 @@ State * Manager::searchState(QPoint pos)
     return nullptr;
 }
 
-bool Manager::intersectState(QPoint pos, State * s, int gridSize)
-{/* Check if specified position intersects any state besides s*/
+bool Manager::intersectState(QPoint pos, int rad, int gridSize)
+{/* Check if specified position intersects any state besides state at current point */
     int r, x, y;
-    for( const auto & i : states )
+    for( const auto & state : states )
     {/* Check all the states */
-        r = i->getRad();
-        x = i->getPos().x();
-        y = i->getPos().y();
+        r = state->getRad();
+        x = state->getPos().x();
+        y = state->getPos().y();
         qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
-        if( i != s && dist < 2 * ( r + gridSize ) )
+
+        if( state->getPos() != pos && dist < ( r + rad + gridSize ) )
         {
             return true;
         }

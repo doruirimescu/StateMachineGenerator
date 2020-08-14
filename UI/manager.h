@@ -21,7 +21,7 @@ public:
     void addState( State * s );
     void deleteState( State * s );
     State * searchState( QPoint pos );
-    bool intersectState( QPoint pos, State *s, int gridSize );
+    bool intersectState( QPoint pos, int rad, int gridSize );
     QPoint onStateBorder( QPoint pos, QString & posInfo );
     void printStates();
 
@@ -34,7 +34,6 @@ public:
     void Astar(int gridSize, int width, int height);
 
     void mapStateToActions();
-
     void updateActionStartEnd(State* s);
 private:
     QHash<State*, vector<Action*> > stateActionStartMap;

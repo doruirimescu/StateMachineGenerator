@@ -29,6 +29,7 @@ void ScribbleArea::clearStates()
 {/* Clear all states */
     m->states.clear();
 }
+
 void ScribbleArea::generateCode()
 {
     QString filename="DataR.txt";
@@ -128,7 +129,6 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
     drawGrid();
 }
 
-
 void ScribbleArea::drawGrid()
 {
     view->clearImage();
@@ -140,7 +140,7 @@ void ScribbleArea::drawGrid()
 
     for( int y = 0; y < height(); y += view->getGridSize() )
     {/* Draw vertical lines */
-        view->drawLine( QPoint(0,y), QPoint(width(),y) );
+        view->drawLine( QPoint(0, y), QPoint(width(), y) );
     }
 
     view->drawStates(m->states);
@@ -151,6 +151,7 @@ void ScribbleArea::drawGrid()
     }
     update();
 }
+
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 {
     if (image->size() == newSize)
