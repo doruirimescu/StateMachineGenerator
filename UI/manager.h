@@ -22,6 +22,7 @@ public:
     void deleteState( State * s );
     State * searchState( QPoint pos );
     bool intersectState( QPoint pos, int rad, int gridSize );
+    bool intersectState( QPoint pos, State * s, int gridSize );
     QPoint onStateBorder( QPoint pos, QString & posInfo );
     void printStates();
 

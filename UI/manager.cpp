@@ -79,12 +79,30 @@ bool Manager::intersectState(QPoint pos, int rad, int gridSize)
         y = state->getPos().y();
         qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
 
-        if( state->getPos() != pos && dist < ( r + rad + gridSize ) )
+        if( state->getPos() != pos && dist < ( r + rad + 2*gridSize ) )
         {
             return true;
         }
     }
     return false;
+}
+bool Manager::intersectState(QPoint pos, State *s, int gridSize)
+{/* Check if specified position intersects any state besides state s */
+    int r, x, y;
+    for( const auto & state : states )
+    {/* Check all the states */
+        r = state->getRad();
+        x = state->getPos().x();
+        y = state->getPos().y();
+        qreal dist = sqrt( qFabs( pos.x() - x ) * qFabs( pos.x() - x ) + qFabs( pos.y() - y ) * qFabs( pos.y() - y ) );
+
+        if( state != s && dist < ( r + s->getRad() + 2*gridSize ) )
+        {
+            return true;
+        }
+    }
+    return false;
+
 }
 
 QPoint Manager::onStateBorder(QPoint pos , QString &posInfo)
