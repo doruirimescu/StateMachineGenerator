@@ -1,6 +1,6 @@
 #include "view.h"
 
-
+#include "arrow.h"
 
 void View::drawLine(const QPoint &start, const QPoint &end)
 {
@@ -117,12 +117,14 @@ void View::drawActionLineDev(const Action *const a)
         int dirX = Maths::sign( endP.x() - lastSplit.x() );
         if( dirX != 0 )
         {/* Moving right dirX = 1, Moving left dirX = -1 */
-            drawArrow( endP.x() - arrowLength * dirX  , lastSplit.y(), endP.x(), endP.y(), arrowWidth, &painter );
+            Arrow arrow( endP.x() - arrowLength * dirX  , lastSplit.y(), endP.x(), endP.y(), arrowWidth, &painter );
+            arrow.draw();
         }
         else
         {/* Moving up dirY = -1, Moving down dirY = 1 */
             int dirY = Maths::sign( endP.y() - sLastSplit.y() );
-            drawArrow( lastSplit.x(), endP.y() - arrowLength * dirY, endP.x(), endP.y(), arrowWidth, &painter );
+            Arrow arrow( lastSplit.x(), endP.y() - arrowLength * dirY, endP.x(), endP.y(), arrowWidth, &painter );
+            arrow.draw();
         }
     }
     painter.end();
@@ -165,46 +167,18 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
     int dirX = Maths::sign( end.x() - split2.x() );
     if( dirX != 0 )
     {/* Moving right dirX = 1, Moving left dirX = -1 */
-        drawArrow( end.x() - arrowLength * dirX  , split2.y(), end.x(), end.y(), arrowWidth, &painter );
+        Arrow arrow( end.x() - arrowLength * dirX  , split2.y(), end.x(), end.y(), arrowWidth, &painter );
+        arrow.draw();
     }
     else
     {/* Moving up dirY = -1, Moving down dirY = 1 */
         int dirY = Maths::sign( end.y() - start.y() );
-        drawArrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &painter );
+        Arrow arrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &painter );
+        arrow.draw();
     }
     painter.end();
 }
-void View::drawArrow(int x0, int y0, int x, int y, int w, QPainter *painter)
-{
-    /* Complicated calculations for drawing a simple arrow. */
-    int dx, dy;
-    double sina, cosa, l;
-    l = qSqrt( (x - x0) * (x - x0)  + (y - y0) * (y - y0) );
-    sina = (y - y0) / l;
-    cosa = (x - x0) / l;
-    dx = ( (sina * w) / 2 );
-    dy = ( (cosa * w) / 2 );
 
-
-    QPoint start= QPoint(x0, y0);
-    QPoint end  = QPoint(x, y);
-    QPoint right= QPoint( dx + x0, (dy + y0) );
-    QPoint left = QPoint( x0 - dx, (y0 - dy) );
-
-    QPolygon poly;
-    poly<< start;
-    poly<<right;
-    poly<< end;
-    poly<<left;
-
-    path.clear();
-    brush.setColor(Qt::black);
-    brush.setStyle(Qt::SolidPattern);
-    path.addPolygon(poly);
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->drawPolygon(poly);
-    painter->fillPath(path, brush);
-}
 void View::drawState(const State *s)
 {
     QPainter painter(&image);
