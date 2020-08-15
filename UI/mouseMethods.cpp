@@ -17,14 +17,15 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
     if( pState && intersectState == false )
     {/* State placement is done, and we are not intersecting another state */
 
-        QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label");
-        if( newLabel.compare("") )
+        bool ok;
+        QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label", QLineEdit::Normal, "S", &ok);
+        if( ok && !newLabel.isEmpty() )
         {
             m->addState(new State(newLabel, currentPoint,
                                   QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin),
                                   getStateColor(), getStateRadius() ));
+            pState = false;
         }
-        pState = false;
     }
     else if( mState && intersectState == false )
     {/* State movement is done, and we are not intersecting another state*/
@@ -59,9 +60,13 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 
             if( option.compare(editOptions[0]) == 0)
             {/* Edit label */
+                bool ok;
                 QString label = dialog->getText( this, "Edit label", "Enter the new value for the state label",
-                                                 QLineEdit::Normal, s->getLabel() );
-                s->setLabel( label );
+                                                 QLineEdit::Normal, s->getLabel(), &ok );
+                if( ok && !label.isEmpty() && m->uniqueLabel(label) )
+                {
+                    s->setLabel( label );
+                }
             }
             else if( option.compare(editOptions[1]) == 0 )
             {/* Edit code */
