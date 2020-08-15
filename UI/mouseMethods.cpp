@@ -92,10 +92,20 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         {/* User wants to place the startpoint of the action */
             pActionStart = true;
             /* Create partial action*/
-            QString actionLabel= QInputDialog::getText(this, "Action label", "Enter new action label");
-            m->addAction( new Action( actionLabel, actionStart, actionEnd, actionStartPoint, invalidPoint ) );
-            m->getLastAction()->addSplit( actionStartPoint );
-            m->getLastAction()->setStartAnchor(actionStartAnchor);
+            bool ok;
+            QString actionLabel= QInputDialog::getText(this, "Action label", "Enter new action label", QLineEdit::Normal,
+                                                       "", &ok);
+            if( ok && !actionLabel.isEmpty() )
+            {
+                m->addAction( new Action( actionLabel, actionStart, actionEnd, actionStartPoint, invalidPoint ) );
+                m->getLastAction()->addSplit( actionStartPoint );
+                m->getLastAction()->setStartAnchor(actionStartAnchor);
+            }
+            else
+            {
+                pAction = false;
+                pActionStart = false;
+            }
         }
         else if( pActionStart == true && m->getLastAction()->getStartPoint() != currentPoint)
         {/* Action startpoint placement has finished */
