@@ -8,9 +8,11 @@
 #include <QtDebug>
 #include <QStaticText>
 #include <QObject>
-#include "manager.h"
+
 #include "maths.h"
 
+class Action;
+class State;
 class View : public QObject
 {
     Q_OBJECT
@@ -23,31 +25,22 @@ public:
     View(QImage &img): image(img) {};
 
     void clearImage(){ image.fill(qRgb(255, 255, 255)); };
+
     /* State-related drawing */
     void drawState(const State *s);
-    void drawCircleTo(const QPoint &endPoint);
-    void drawInvalidCircleTo(const QPoint &endPoint);
     void drawStates(const QVector<State*> &states);
 
     /* Action-related drawing */
     void drawAnchor(const QPoint &endPoint);
     void drawPossibleAnchor(const QPoint &endPoint);
-    void drawPossibleActionLine(const QPoint &start, const QPoint &end);
+    void drawPossibleActionLine(const QPoint &start, const QPoint &end, int gridSize, QPen * pen);
     void drawAction(const Action *const a);
     void drawActionText(const Action *const a);
-    void drawActionLineDev(const Action *const a);//in development
-    void drawActions(const QVector<Action*> &actions);
-
-    /* Line used for grids */
-    void drawLine(const QPoint &start, const QPoint &end);
+    void drawActionLine(const Action *const a);//in development
 
     /* State radius setter-getter */
     int getStateRadius(){ return stateRadius; };
     void setStateRadius(int rad){ stateRadius = rad; };
-
-    /* Grid size setter-getter*/
-    int getGridSize() { return gridSize; };
-    void setGridSize(int grid) { gridSize = grid; };
 
     /* Pen color setter-getter */
     QColor getPenColor() { return penColor; };
@@ -63,7 +56,6 @@ public:
 
 private:
     QImage &image;
-    int gridSize = 20;
 
     /* Used for drawing states */
     QColor penColor = 0x3333FF;
@@ -71,9 +63,6 @@ private:
     QColor stateColor = 0xF5F5F5;
     int stateRadius = 60;
 
-    /* Used for drawing the action arrow */
-    QBrush brush;
-    QPainterPath path;
 };
 
 #endif // VIEW_H

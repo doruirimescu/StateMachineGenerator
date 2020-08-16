@@ -1,4 +1,8 @@
 #include "scribblearea.h"
+#include "manager.h"
+#include "Shapes/circle.h"
+#include <QInputDialog>
+#include <QMouseEvent>
 
 /* Mouse event methods : Controller */
 
@@ -97,7 +101,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
                                                        "", &ok);
             if( ok && !actionLabel.isEmpty() )
             {
-                m->addAction( new Action( actionLabel, actionStart, actionEnd, actionStartPoint, invalidPoint ) );
+                m->addAction( new Action( actionLabel, actionStart, actionEnd, actionStartPoint, invalidPoint, actionPen ) );
                 m->getLastAction()->addSplit( actionStartPoint );
                 m->getLastAction()->setStartAnchor(actionStartAnchor);
             }
@@ -117,12 +121,12 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 
             QPoint split1, split2;
             /* First split happens horizontally */
-            split1 = QPoint( actionStartPoint.x() + Maths::roundToGrid( ( currentPoint.x() - actionStartPoint.x() ) / 2, view->getGridSize() ),
+            split1 = QPoint( actionStartPoint.x() + Maths::roundToGrid( ( currentPoint.x() - actionStartPoint.x() ) / 2, getGridSize() ),
                                     actionStartPoint.y() );
 
             /* Second split happens vertically */
             /* Handle exceptional case just as in view. */
-            if( qAbs(currentPoint.x() - actionStartPoint.x()) == view->getGridSize() )
+            if( qAbs(currentPoint.x() - actionStartPoint.x()) == getGridSize() )
             {
                 split1 = actionStartPoint;
             }
@@ -158,8 +162,8 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
 {/* When user is moving the mouse */
 
-    updateCurrentPoint( Maths::roundToGrid( event->pos().x(), view->getGridSize() ),
-                        Maths::roundToGrid( event->pos().y(), view->getGridSize() )
+    updateCurrentPoint( Maths::roundToGrid( event->pos().x(), getGridSize() ),
+                        Maths::roundToGrid( event->pos().y(), getGridSize() )
                         );
     if( pState || mState )
     {
@@ -171,11 +175,17 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     /* Does the current cursor point intersect other states besides the state which I'm placing ?*/
     if( pState && m->intersectState(currentPoint, getStateRadius(), getGridSize() ) )
     {/* Placing a state, but intersecting another one */
-        view->drawInvalidCircleTo(currentPoint);
+
+        QPen *pen = new QPen(getPenColor(), getPenWidth());
+        Circle invalidCircle(&currentPoint, getStateRadius(), &image, new QColor(QColor(Qt::red)), pen, 0.2);
+        invalidCircle.draw();
     }
     else if( pState )
     {/* If moving mouse while placing state */
-        view->drawCircleTo(currentPoint);
+        QPen *pen = new QPen(getPenColor(), getPenWidth());
+        QColor col = getStateColor();
+        Circle validCircle(&currentPoint, getStateRadius(), &image, &col, pen, 0.2);
+        validCircle.draw();
     }
     else if ( mState && !m->intersectState(currentPoint, movingState, getGridSize() ) ) //check if intersecting with moving state
     {/* If moving a state */
@@ -184,7 +194,9 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     else if( mState )
     {/* Intersecting state */
         movingState->setPos(invalidPoint);
-        view->drawInvalidCircleTo(currentPoint);
+        QPen *pen = new QPen(getPenColor(), getPenWidth());
+        Circle invalidCircle(&currentPoint, getStateRadius(), &image, new QColor(QColor(Qt::red)), pen, 0.2);
+        invalidCircle.draw();
     }
     else if( pAction )
     {/* If placing action */
@@ -215,9 +227,9 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
             /* Reset action endpoint in case the user changes his mind */
             actionEndPoint = invalidPoint;
         }
-        if( pActionStart == true )
+        if( pActionStart == true && actionStartPoint != currentPoint )
         {/* The user has placed the first anchor point */
-            view->drawPossibleActionLine(actionStartPoint, currentPoint);
+            view->drawPossibleActionLine(actionStartPoint, currentPoint, getGridSize(), m->getLastAction()->getPen());
         }
     }
 }

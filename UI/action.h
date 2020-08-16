@@ -6,7 +6,7 @@ class Action
 {
 public:
     /* Constructor-destructor */
-    Action( QString label, State* s, State* e, QPoint sP, QPoint eP ) : label(label), startState(s), endState(e), startPos(sP), endPos(eP){};
+    Action( QString label, State* s, State* e, QPoint sP, QPoint eP, QPen *pen ) : label(label), startState(s), endState(e), startPos(sP), endPos(eP), pen(pen){};
     ~Action(){qInfo()<<"Action from state: "<<this->startState->getLabel()<<" to state: "<<this->endState->getLabel()<<"DEAD";}
 
     void print();
@@ -52,6 +52,12 @@ public:
     bool hasAnchorAt(const QPoint &p)const;
 
     long getDistance()const;
+
+    QPen *getPen()
+    const
+    {
+        return pen;
+    }
 private:
     QString label;
     State* startState;
@@ -61,6 +67,7 @@ private:
     QVector <QPoint> splits;
     QString startAnchor;//R/L/U/D
     QString endAnchor;  //R/L/U/D
+    QPen *pen;
 
 };
 

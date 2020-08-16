@@ -1,10 +1,8 @@
 #ifndef SCRIBBLEAREA_H
 #define SCRIBBLEAREA_H
 
-#include <QInputDialog>
 #include <QApplication>
 #include <QWidget>
-#include <QMouseEvent>
 #include <QLabel>
 #include "view.h"
 
@@ -14,17 +12,18 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
+#include "Shapes/grid.h"
 #endif
 #endif
 
-
+class Manager;
 class ScribbleArea : public QWidget
 {
     Q_OBJECT
 public:
     /* Constructor-destructor */
     ScribbleArea(QWidget *parent = nullptr);
-    ~ScribbleArea(){ delete m; delete view;};
+    ~ScribbleArea();
 
     bool isModified() const { return modified; }
 
@@ -33,8 +32,8 @@ public:
     void setStateRadius(int rad) const { this->view->setStateRadius(rad); };
 
     /* Grid size setter-getter*/
-    void setGridSize(int grid) const {this->view->setGridSize(grid);};
-    int getGridSize() const {return this->view->getGridSize();};
+    bool setGridSize(int size) const;
+    int getGridSize() const {return grid->getSize();};
 
     /* Pen color setter-getter */
     QColor getPenColor() const { return view->getPenColor(); }
@@ -71,6 +70,10 @@ public:
     QString actionEndAnchor;
     State *movingState;
 
+    /* Used for managing the grid */
+    Grid *grid;
+
+
 public slots:
     void print();
 
@@ -96,8 +99,9 @@ private:
     Manager *m;
     QImage image;
     QPoint currentPoint = QPoint(0, 0);
-
     View * view;
+
+    QPen *actionPen;
 };
 //! [0]
 

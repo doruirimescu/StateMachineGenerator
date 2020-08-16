@@ -70,12 +70,13 @@ void MainWindow::stateColor()
 void MainWindow::changeGrid()
 {
     int newSize = 3;
-    while( newSize % 10 != 0 )
+    newSize = QInputDialog::getInt( this,"Change grid",
+                                    "Enter a new grid size multiple of 10", scribbleArea->getGridSize() );
+    if( !scribbleArea->setGridSize(newSize) )
     {
-        newSize = QInputDialog::getInt( this,"Change grid",
-                                        "Enter a new grid size multiple of 10", scribbleArea->getGridSize() );
+         QMessageBox::critical( this, "ERROR", "Cannot set a grid size which is larger than the smallest state radius\n, smaller than 10 or not a multiple of 10 !!!");
     }
-    scribbleArea->setGridSize( newSize  );
+
 }
 void MainWindow::changeRadius( )
 {

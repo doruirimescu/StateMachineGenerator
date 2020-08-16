@@ -1,6 +1,5 @@
 #include "stateplacement.h"
 
-statePlacement::statePlacement()
+void statePlacement::showDebug()
 {
-
 }

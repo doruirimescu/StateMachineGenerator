@@ -19,6 +19,11 @@ Manager::~Manager()
 /* State-related management */
 void Manager::addState(State *s)
 {
+    /* Keep track of smallest state radius */
+    if( s->getRad() < smallestStateRadius )
+    {
+        smallestStateRadius = s->getRad();
+    }
     states.append(s);
 }
 void Manager::deleteState(State *s)
@@ -298,4 +303,16 @@ void Manager::Astar(int gridSize, int width, int height)
         }
     }
     MAPPGridState::walls.clear();
+}
+
+bool Manager::uniqueLabel(QString label)
+{
+    for( const auto state : states )
+    {
+        if( state->getLabel() == label)
+        {
+            return false;
+        }
+    }
+    return true;
 }

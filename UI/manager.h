@@ -16,7 +16,7 @@
 class Manager
 {
 public:
-    Manager(){};
+    Manager(){smallestStateRadius = INT_MAX;};
     ~Manager();
     void addState( State * s );
     void deleteState( State * s );
@@ -36,7 +36,12 @@ public:
 
     void mapStateToActions();
     void updateActionStartEnd(State* s);
+
+    bool uniqueLabel(QString);
+
+    int getSmallestStateRadius(){return smallestStateRadius;};
 private:
+    int smallestStateRadius;
     QHash<State*, vector<Action*> > stateActionStartMap;
     QHash<State*, vector<Action*> > stateActionEndMap;
 };

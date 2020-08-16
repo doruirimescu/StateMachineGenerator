@@ -1,28 +1,16 @@
 #include "view.h"
 
-#include "arrow.h"
+#include "Shapes/arrow.h"
+#include "Shapes/circle.h"
+#include "Shapes/line.h"
+#include <action.h>
+#include <state.h>
 
-void View::drawLine(const QPoint &start, const QPoint &end)
-{
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(QColor(0xE0E0E0), 1.1, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
-    painter.drawLine(start, end);
-    painter.end();
-}
-void View::drawActions(const QVector<Action *> &actions)
-{
-    for( const auto & a: actions )
-    {
-        drawAction(a);
-    }
-}
 void View::drawAction(const Action *const a)
 {/* Draw a full action that has been completed */
     drawAnchor(a->getEndPoint());
     drawAnchor(a->getStartPoint());
-    drawActionLineDev(a);
+    drawActionLine(a);
 
     /* Draw action text */
     if( a->getSplitsSize() > 1 )
@@ -30,9 +18,11 @@ void View::drawAction(const Action *const a)
         drawActionText(a);
     }
 }
+
 void View::drawActionText(const Action *const a)
 {
     QPainter painter(&image);
+    QBrush brush;
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(QColor(0x1000E0), 1.1, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
@@ -56,37 +46,24 @@ void View::drawActionText(const Action *const a)
     painter.drawStaticText(textX - rect.width()/2, textY, QStaticText( a->getLabel() ) ) ;
     painter.end();
 }
+
 void View::drawAnchor(const QPoint &endPoint)
 {/* Draw anchor point where an action could join */
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    /*Remove previous point*/
-    painter.setBrush( ( QColor(Qt::white) ) );
-    painter.drawEllipse(endPoint, 5, 5 );
-
-    painter.setPen( QPen( QColor(0x3333FF), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush( QColor(0xB0E3E6) );
-    painter.setOpacity(0.7);
-    painter.drawEllipse(endPoint, 5, 5 );
-    painter.end();
+    Circle anchor( &endPoint, 5, &image, new QColor(0xB0E3E6), new QPen(QColor(0x3333FF), 2), 0.7 );
+    anchor.clear();
+    anchor.draw();
 }
 
 void View::drawPossibleAnchor(const QPoint &endPoint)
 {/* Draw a possible anchor point where an action could join */
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    /*Remove previous point*/
-    painter.setBrush( ( QColor(Qt::white) ) );
-    painter.drawEllipse(endPoint, 6, 6 );
 
-    painter.setPen( QPen( QColor(0x3333FF), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush( QColor(0xC0D3E6) );
-    painter.setOpacity(0.2);
-    painter.drawEllipse(endPoint, 6, 6 );
-    painter.end();
+    QPen* pen = new QPen(QColor(0x3333FF), 2);
+    Circle anchor( &endPoint, 6, &image, new QColor(Qt::white), pen, 0.5 );
+    anchor.clear();
+    anchor.draw();
 
 }
-void View::drawActionLineDev(const Action *const a)
+void View::drawActionLine(const Action *const a)
 {
     /* Get all the split points of the action */
     QVector<QPoint>::const_iterator begin;
@@ -98,14 +75,12 @@ void View::drawActionLineDev(const Action *const a)
     const QPoint lastSplit  = *(end-2);//last split
     const QPoint sLastSplit = *(end-3);//second last split
 
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
+
     /* Draw the line with all the splits */
     while( begin + 1 != end )
     {
-        painter.drawLine(*begin, *(begin + 1));
+        Line line(begin, begin+1, a->getPen(), &image );
+        line.draw();
         begin++;
     }
 
@@ -117,28 +92,24 @@ void View::drawActionLineDev(const Action *const a)
         int dirX = Maths::sign( endP.x() - lastSplit.x() );
         if( dirX != 0 )
         {/* Moving right dirX = 1, Moving left dirX = -1 */
-            Arrow arrow( endP.x() - arrowLength * dirX  , lastSplit.y(), endP.x(), endP.y(), arrowWidth, &painter );
+            Arrow arrow( endP.x() - arrowLength * dirX  , lastSplit.y(), endP.x(), endP.y(), arrowWidth, &image );
             arrow.draw();
         }
         else
         {/* Moving up dirY = -1, Moving down dirY = 1 */
             int dirY = Maths::sign( endP.y() - sLastSplit.y() );
-            Arrow arrow( lastSplit.x(), endP.y() - arrowLength * dirY, endP.x(), endP.y(), arrowWidth, &painter );
+            Arrow arrow( lastSplit.x(), endP.y() - arrowLength * dirY, endP.x(), endP.y(), arrowWidth, &image );
             arrow.draw();
         }
     }
-    painter.end();
+
 }
-void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
+void View::drawPossibleActionLine(const QPoint &start, const QPoint &end, int gridSize, QPen *pen)
 {
     /*
      * Draw a possible action line split into 2 parts.
      * The endpoint contains an arrow.
      */
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
 
     /* First split happens horizontally */
     QPoint split1 = QPoint( start.x() + Maths::roundToGrid( ( end.x() - start.x() ) / 2, gridSize ), start.y() );
@@ -154,9 +125,12 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
     split2.setY( end.y() );
 
     /* Draw lines */
-    painter.drawLine(start, split1);
-    painter.drawLine(split1, split2);
-    painter.drawLine(split2, end);
+    Line line1(&start, &split1, pen , &image );
+    Line line2(&split1, &split2, pen , &image );
+    Line line3(&split2, &end, pen , &image );
+    line1.draw();
+    line2.draw();
+    line3.draw();
 
     /* Create an arrow pointing towards end, mind the arrow directions */
 
@@ -165,29 +139,32 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end)
     int arrowWidth  = gridSize / 2;
 
     int dirX = Maths::sign( end.x() - split2.x() );
+
     if( dirX != 0 )
     {/* Moving right dirX = 1, Moving left dirX = -1 */
-        Arrow arrow( end.x() - arrowLength * dirX  , split2.y(), end.x(), end.y(), arrowWidth, &painter );
+        Arrow arrow( end.x() - arrowLength * dirX  , split2.y(), end.x(), end.y(), arrowWidth, &image );
         arrow.draw();
+
     }
     else
     {/* Moving up dirY = -1, Moving down dirY = 1 */
         int dirY = Maths::sign( end.y() - start.y() );
-        Arrow arrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &painter );
+        Arrow arrow( split2.x(), end.y() - arrowLength * dirY, end.x(), end.y(), arrowWidth, &image );
         arrow.draw();
     }
-    painter.end();
 }
 
 void View::drawState(const State *s)
 {
+    QPoint pos = s->getPos();
+
+    QPen pen = s->getPen();
+    QColor col = s->getCol();
+    Circle circle(&pos, s->getRad(), &image, &col, &pen, 1.0);
+    circle.draw();
+
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
-    /* Get state original pen */
-    painter.setPen( s->getPen() );
-    painter.setBrush( s->getCol() );
-    painter.drawEllipse( s->getPos(), s->getRad(), s->getRad() );
-
     /* Get a bounding rectangle for the text */
     QString text;
     text.append( QString(s->getLabel() ) );
@@ -202,39 +179,4 @@ void View::drawStates(const QVector<State *> &states)
     {
         drawState(s);
     }
-}
-void View::drawCircleTo(const QPoint &endPoint)
-{/* Draw current ellipse */
-
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    /* Clear gridline where new circle is drawn */
-    painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush( QColor(0xffffff) );
-    painter.drawEllipse( endPoint, stateRadius, stateRadius );
-
-    /* Draw new circle */
-    painter.setPen( QPen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush(stateColor);
-    painter.setOpacity(0.2);
-    painter.drawEllipse( endPoint, stateRadius, stateRadius );
-    painter.end();
-}
-
-void View::drawInvalidCircleTo(const QPoint &endPoint)
-{/* Draw current ellipse */
-
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    /* Clear gridline where new circle is drawn */
-    painter.setPen( QPen(QColor( 0xffffff ), penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush( QColor(0xffffff) );
-    painter.drawEllipse( endPoint, stateRadius, stateRadius );
-
-    /* Draw new circle */
-    painter.setPen( QPen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin) );
-    painter.setBrush(QColor(Qt::red));
-    painter.setOpacity(0.3);
-    painter.drawEllipse( endPoint, stateRadius, stateRadius );
-    painter.end();
 }

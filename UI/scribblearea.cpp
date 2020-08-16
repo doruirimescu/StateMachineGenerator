@@ -1,10 +1,17 @@
+#include "Shapes/line.h"
 #include "scribblearea.h"
+#include<manager.h>
 #include <QSet>
+#include <QMouseEvent>
 /*
  * The area which reacts to user inputs
  */
+
+
 ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
 {
+    grid = new Grid( new QPen(QColor(0xE0E0E0), 1.1, Qt::SolidLine, Qt::RoundCap,
+                                               Qt::RoundJoin), 1.0, width(), height(), 20, &image);
     setAttribute(Qt::WA_StaticContents);
     setAttribute((Qt::WA_MouseTracking));
 
@@ -23,6 +30,16 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     movingState = nullptr;
     /* Create a manager */
     m = new Manager();
+
+    actionPen = new QPen(QPen(QColor(0x000001), 1.1, Qt::SolidLine, Qt::RoundCap,
+                              Qt::RoundJoin));
+}
+
+ScribbleArea::~ScribbleArea()
+{
+    delete m;
+    delete view;
+    delete grid;
 }
 
 void ScribbleArea::clearStates()
@@ -97,6 +114,16 @@ void ScribbleArea::generateCode()
     qInfo()<<"Generating code";
 }
 
+bool ScribbleArea::setGridSize(int size) const
+{/* Cannot set a grid size which is larger than the smallest state radius\n, smaller than 10 or not a multiple of 10 !!! */
+    if( m->getSmallestStateRadius() > size && size >= 10 && size % 10 == 0)
+    {
+        grid->setSize(size);
+        return true;
+    }
+    return false;
+}
+
 void ScribbleArea::rearrangeActions()
 {
     m->Astar( getGridSize(), width(), height() );
@@ -126,6 +153,7 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
         qInfo()<<"RESIZE"<<image.width();
     }
     QWidget::resizeEvent(event);
+    grid->resize( width(), height() );
     drawGrid();
 }
 
@@ -133,44 +161,42 @@ void ScribbleArea::drawGrid()
 {
     view->clearImage();
     /* Every mouse update, redraw the whole thing */
-    for( int x = 0; x < width(); x += view->getGridSize() )
-    {/* Draw horizontal lines */
-        view->drawLine( QPoint(x,0), QPoint(x,height()) );
-    }
-
-    for( int y = 0; y < height(); y += view->getGridSize() )
-    {/* Draw vertical lines */
-        view->drawLine( QPoint(0, y), QPoint(width(), y) );
-    }
+    grid->draw();
 
     view->drawStates(m->states);
 
     if( !mState )
     {
-        view->drawActions(m->actions);
+        for( const auto & a: m->actions )
+        {
+            view->drawAction(a);
+        }
     }
     update();
 }
-
 void ScribbleArea::boundToDrawingArea()
 {
     if( currentPoint.x() - getStateRadius() < getGridSize() )
     {/* If the cursor is out of bounds, limit it inside drawing area*/
-        currentPoint.setX( getGridSize() + getStateRadius() );
+        int pos = getGridSize() + getStateRadius();
+        currentPoint.setX( Maths::roundToGrid( pos, getGridSize()) );
     }
     if( currentPoint.y() - getStateRadius() < getGridSize() )
     {/* If the cursor is out of bounds, limit it inside drawing area*/
-        currentPoint.setY( getGridSize() + getStateRadius() );
+        int pos = getGridSize() + getStateRadius();
+        currentPoint.setY( Maths::roundToGrid( pos, getGridSize()) );
     }
 
     if( currentPoint.x() + getStateRadius() > width() - getGridSize() )
     {/* If the cursor is out of bounds, limit it inside drawing area*/
-        currentPoint.setX( width() - getStateRadius() - getGridSize() );
+        int pos = width() - getStateRadius() - getGridSize();
+        currentPoint.setX( Maths::roundToGrid( pos, getGridSize()) );
     }
 
     if( currentPoint.y() + getStateRadius() > height() - getGridSize() )
     {/* If the cursor is out of bounds, limit it inside drawing area*/
-        currentPoint.setY( height() - getStateRadius() - getGridSize() );
+        int pos = height() - getStateRadius() - getGridSize();
+        currentPoint.setY( Maths::roundToGrid( pos, getGridSize()) );
     }
 }
 void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
