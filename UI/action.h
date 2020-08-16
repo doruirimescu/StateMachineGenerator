@@ -2,6 +2,7 @@
 #define ACTION_H
 #include "state.h"
 #include "math.h"
+#include <QPair>
 class Action
 {
 public:
@@ -45,7 +46,7 @@ public:
     void clearSplits(){ splits.clear(); }
 
     /* Access splits vector */
-    void getSplits( QVector<QPoint>::const_iterator &begin, QVector<QPoint>::const_iterator &end) const{ begin = splits.begin(); end = splits.end(); };
+     QPair<QVector<QPoint>::const_iterator, QVector<QPoint>::const_iterator> getSplits() const{ return qMakePair( splits.begin(), splits.end()); };
 
     uint getSplitsSize()const{ return splits.size(); };
 

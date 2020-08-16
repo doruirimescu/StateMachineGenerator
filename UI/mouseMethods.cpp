@@ -201,7 +201,7 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     else if( pAction )
     {/* If placing action */
         QString anchorInfo;
-        QPoint possibleAnchorPoint = m->onStateBorder( currentPoint, anchorInfo );
+        QPoint possibleAnchorPoint = m->onStateBorder( QPoint( event->pos().x(),  event->pos().y()), anchorInfo );
         if( possibleAnchorPoint != invalidPoint )
         {/* If cursor is at any valid anchor point */
 

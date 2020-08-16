@@ -114,6 +114,7 @@ void ScribbleArea::generateCode()
     qInfo()<<"Generating code";
 }
 
+
 bool ScribbleArea::setGridSize(int size) const
 {/* Cannot set a grid size which is larger than the smallest state radius\n, smaller than 10 or not a multiple of 10 !!! */
     if( m->getSmallestStateRadius() > size && size >= 10 && size % 10 == 0)

@@ -5,6 +5,7 @@
 #include "Shapes/line.h"
 #include <action.h>
 #include <state.h>
+#include <QPair>
 
 void View::drawAction(const Action *const a)
 {/* Draw a full action that has been completed */
@@ -21,14 +22,10 @@ void View::drawAction(const Action *const a)
 
 void View::drawActionText(const Action *const a)
 {
-    QPainter painter(&image);
-    QBrush brush;
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(QColor(0x1000E0), 1.1, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
-    QVector<QPoint>::const_iterator begin;
-    QVector<QPoint>::const_iterator end;
-    a->getSplits(begin, end);
+
+    auto splits = a->getSplits();
+    auto begin = splits.first;
+    auto end = splits.second;
     QPoint split1 = *( begin + a->getSplitsSize() / 2 - 1 );
     QPoint split2 = *( begin + a->getSplitsSize() / 2 );
 
@@ -36,8 +33,14 @@ void View::drawActionText(const Action *const a)
     qint16 textX = split1.x()+ ( split2.x() - split1.x() ) / 2;
     qint16 textY = split1.y() + ( split2.y() - split1.y() ) / 2;
 
+    QPainter painter(&image);
+    QBrush brush;
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(*a->getPen());
+
     QRectF rect = painter.boundingRect( textX, textY, 50, 50, Qt::AlignHCenter,  a->getLabel() );
     QRect r = QRect(textX - rect.width()/2 , textY, rect.width(), rect.height() );
+
     /* Set rectangle background color to white */
     brush.setColor( QColor( Qt::white) );
     painter.fillRect(r, brush);
@@ -66,9 +69,9 @@ void View::drawPossibleAnchor(const QPoint &endPoint)
 void View::drawActionLine(const Action *const a)
 {
     /* Get all the split points of the action */
-    QVector<QPoint>::const_iterator begin;
-    QVector<QPoint>::const_iterator end;
-    a->getSplits(begin, end);
+    auto splits = a->getSplits();
+    auto begin = splits.first;
+    auto end = splits.second;
 
     /* Define the points needed for drawing an arrow */
     const QPoint endP       = *(end-1);//end point
@@ -87,8 +90,8 @@ void View::drawActionLine(const Action *const a)
     if( a->getEndPoint() != invalidPoint )
     {/* Action has an end, draw arrow */
         /* Create an arrow pointing towards end, mind the arrow directions */
-        int arrowLength = a->getEnd()->getRad() / 5;
-        int arrowWidth  = a->getEnd()->getRad() / 5;
+        int arrowLength = 10;
+        int arrowWidth  = 10;
         int dirX = Maths::sign( endP.x() - lastSplit.x() );
         if( dirX != 0 )
         {/* Moving right dirX = 1, Moving left dirX = -1 */
@@ -169,7 +172,6 @@ void View::drawState(const State *s)
     QString text;
     text.append( QString(s->getLabel() ) );
     QRectF rect = painter.boundingRect( s->getPos().x(), s->getPos().y(), 50, 50, Qt::AlignHCenter, text );
-
     painter.drawStaticText( s->getPos().x() - rect.width() / 2, s->getPos().y() - rect.height() / 2, QStaticText( text ) ) ;
     painter.end();
 }
