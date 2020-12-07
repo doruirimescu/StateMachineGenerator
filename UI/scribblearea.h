@@ -17,6 +17,7 @@
 #endif
 
 class Manager;
+class Circle;
 class ScribbleArea : public QWidget
 {
     Q_OBJECT
@@ -72,6 +73,8 @@ public:
 
     /* Used for managing the grid */
     Grid *grid;
+
+    Circle *myCircle; //test, delete
 
 
 public slots:

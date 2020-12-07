@@ -1,10 +1,14 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include <QVector>
+#include <QSharedPointer>
 
+#include<memory>
 class QPen;
 class QPoint;
 class QPaintDevice;
+class Line;
 
 class Grid
 {
@@ -15,7 +19,8 @@ public:
     void setOpacity(const double opac){opacity = opac;};
     void setSize(int sz){ size = sz;};
     int getSize()const{ return size; };
-    void resize(const int &w, const int &h){ width = w; height = h;};
+    void resize(const int &w, const int &h);
+    void construct();
 
 private:
     QPen* pen;
@@ -24,6 +29,7 @@ private:
     int height;
     int size;
     QPaintDevice* paintDevice;
+    std::vector<std::unique_ptr<Line>> gridLines;
 };
 
 #endif // GRID_H

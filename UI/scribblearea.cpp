@@ -28,6 +28,7 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     pActionStart     = false;
 
     movingState = nullptr;
+
     /* Create a manager */
     m = new Manager();
 
@@ -214,6 +215,7 @@ void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
 
 void ScribbleArea::print()
 {
+    qDebug()<<"PRINT";
 #if QT_CONFIG(printdialog)
     QPrinter printer(QPrinter::HighResolution);
 

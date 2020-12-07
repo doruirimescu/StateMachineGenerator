@@ -25,7 +25,6 @@ void View::drawActionText(const Action *const a)
 
     auto splits = a->getSplits();
     auto begin = splits.first;
-    auto end = splits.second;
     QPoint split1 = *( begin + a->getSplitsSize() / 2 - 1 );
     QPoint split2 = *( begin + a->getSplitsSize() / 2 );
 
@@ -82,7 +81,7 @@ void View::drawActionLine(const Action *const a)
     /* Draw the line with all the splits */
     while( begin + 1 != end )
     {
-        Line line(begin, begin+1, a->getPen(), &image );
+        Line line(*begin, *(begin+1), a->getPen(), &image );
         line.draw();
         begin++;
     }
@@ -128,9 +127,9 @@ void View::drawPossibleActionLine(const QPoint &start, const QPoint &end, int gr
     split2.setY( end.y() );
 
     /* Draw lines */
-    Line line1(&start, &split1, pen , &image );
-    Line line2(&split1, &split2, pen , &image );
-    Line line3(&split2, &end, pen , &image );
+    Line line1(start, split1, pen , &image );
+    Line line2(split1, split2, pen , &image );
+    Line line3(split2, end, pen , &image );
     line1.draw();
     line2.draw();
     line3.draw();
@@ -163,6 +162,7 @@ void View::drawState(const State *s)
 
     QPen pen = s->getPen();
     QColor col = s->getCol();
+
     Circle circle(&pos, s->getRad(), &image, &col, &pen, 1.0);
     circle.draw();
 

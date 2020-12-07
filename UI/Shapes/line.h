@@ -1,21 +1,22 @@
 #ifndef LINE_H
 #define LINE_H
 
+#include<QPoint>
+#include "shapeinterface.h"
 
-class QPoint;
 class QPen;
 class QPaintDevice;
-
-class Line
+class Line : protected ShapeInterface
 {
 public:
-    Line(const QPoint* start, const QPoint* end, QPen* pen, QPaintDevice* const &dev);
-    void draw();
-private:
-    const QPoint* start;
-    const QPoint* end;
-    const QPen* pen;
-    QPaintDevice *paintDevice;
-};
+    static int ctr;
+    Line(const QPoint start, const QPoint end, QPen *pen, QPaintDevice *const &dev);
+    ~Line(){};
 
+    void draw()override;
+private:
+    QPoint start;
+    QPoint end;
+};
 #endif // LINE_H
+

@@ -1,7 +1,5 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
-
-
 class QPoint;
 class QPaintDevice;
 class QPen;
@@ -15,7 +13,6 @@ public:
     void clear();
 
 protected:
-
     const QPoint *center;
     const int radius;
     QPaintDevice *paintDevice;

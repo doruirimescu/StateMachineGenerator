@@ -12,8 +12,10 @@ HEADERS       = mainwindow.h \
                 PropertyHelper.h \
                 Shapes/arrow.h \
                 Shapes/circle.h \
+                Shapes/continuousline.h \
                 Shapes/grid.h \
                 Shapes/line.h \
+                Shapes/shapeinterface.h \
                 action.h \
                 manager.h \
                 maths.h \
@@ -29,8 +31,10 @@ SOURCES       = main.cpp \
                 Astar/heuristic.cpp \
                 Shapes/arrow.cpp \
                 Shapes/circle.cpp \
+                Shapes/continuousline.cpp \
                 Shapes/grid.cpp \
                 Shapes/line.cpp \
+                Shapes/shapeinterface.cpp \
                 action.cpp \
                 mainwindow.cpp \
                 manager.cpp \
@@ -46,3 +50,5 @@ target.path = $$/home/aod/Desktop/github/StateMachineGenerator/UI
 INSTALLS += target
 
 DISTFILES +=
+
+FORMS +=

@@ -4,6 +4,7 @@
 #include <QInputDialog>
 #include <QMouseEvent>
 
+
 /* Mouse event methods : Controller */
 
 void ScribbleArea::mousePressEvent(QMouseEvent *event)
@@ -25,9 +26,10 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
         QString newLabel= QInputDialog::getText(this, "State label", "Enter new state label", QLineEdit::Normal, "S", &ok);
         if( ok && !newLabel.isEmpty() )
         {
-            m->addState(new State(newLabel, currentPoint,
-                                  QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin),
-                                  getStateColor(), getStateRadius() ));
+            State * new_state = new State(newLabel, currentPoint,
+                                          QPen(getPenColor(), getPenWidth(), Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin),
+                                          getStateColor(), getStateRadius() );
+            m->addState(new_state);
             pState = false;
         }
     }
@@ -177,8 +179,8 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     {/* Placing a state, but intersecting another one */
 
         QPen *pen = new QPen(getPenColor(), getPenWidth());
-        Circle invalidCircle(&currentPoint, getStateRadius(), &image, new QColor(QColor(Qt::red)), pen, 0.2);
-        invalidCircle.draw();
+        Circle *invalidCircle = new Circle(&currentPoint, getStateRadius(), &image, new QColor(QColor(Qt::red)), pen, 0.2);
+        invalidCircle->draw();
     }
     else if( pState )
     {/* If moving mouse while placing state */

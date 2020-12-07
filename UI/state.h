@@ -10,6 +10,7 @@
 
 class State
 {
+
 public:
     /* Constructor-destructor */
     State( QString label, QPoint pos, QPen pen, QColor color, int radius ) :  pen(pen), pos(pos), col(color), radius(radius), label(label){};

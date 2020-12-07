@@ -2,8 +2,6 @@
 #include <QPen>
 #include <QPainter>
 #include <QColor>
-
-
 Circle::Circle(const QPoint* const &center, int radius, QPaintDevice* const &dev, QColor *fillColor, QPen *pen, const double opacity) :
     center(center), radius(radius), paintDevice(dev), fillColor(fillColor), pen(pen), opacity(opacity)
 {
@@ -32,4 +30,6 @@ void Circle::clear()
     painter->drawEllipse( *center, radius, radius );
     painter->end();
 }
+
+
 
